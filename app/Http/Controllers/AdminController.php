@@ -12,26 +12,22 @@ class AdminController extends Controller
     {
         return $this->middleware('auth');
     }
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {   
-        if(Auth::User()->role == "admin")
-        {
+    {
+        if (Auth::User()->role == "admin") {
             return view('admin.dashboard');
-        }
-        elseif(Auth::User()->role == "instructor")
-        {
+        } elseif (Auth::User()->role == "instructor") {
             return view('instructor.dashboard');
-        }
-        else
-        {
+        } else {
             abort(404, 'Page Not Found.');
         }
-        
+
     }
 
     /**
@@ -47,7 +43,7 @@ class AdminController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -58,7 +54,7 @@ class AdminController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\admin  $admin
+     * @param \App\admin $admin
      * @return \Illuminate\Http\Response
      */
     public function show(admin $admin)
@@ -69,7 +65,7 @@ class AdminController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\admin  $admin
+     * @param \App\admin $admin
      * @return \Illuminate\Http\Response
      */
     public function edit(admin $admin)
@@ -80,8 +76,8 @@ class AdminController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\admin  $admin
+     * @param \Illuminate\Http\Request $request
+     * @param \App\admin $admin
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, admin $admin)
@@ -92,7 +88,7 @@ class AdminController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\admin  $admin
+     * @param \App\admin $admin
      * @return \Illuminate\Http\Response
      */
     public function destroy(admin $admin)

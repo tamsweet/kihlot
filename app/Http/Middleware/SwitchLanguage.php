@@ -12,23 +12,21 @@ class SwitchLanguage
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
+     * @param \Illuminate\Http\Request $request
+     * @param \Closure $next
      * @return mixed
      */
     public function handle($request, Closure $next)
     {
-        $def_lang = Language::where('def','=',1)->first();
+        $def_lang = Language::where('def', '=', 1)->first();
 
         if (!Session::has('changed_language')) {
-            
-            if(isset($def_lang))
-            {
-                
+
+            if (isset($def_lang)) {
+
                 Session::put('changed_language', $def_lang->local);
 
-            }else
-            {
+            } else {
                 Session::put('changed_language', 'en');
             }
 
@@ -36,7 +34,7 @@ class SwitchLanguage
 
 
         App::setLocale(Session::get('changed_language'));
-        
+
         return $next($request);
     }
 }

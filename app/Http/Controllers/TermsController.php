@@ -9,33 +9,30 @@ class TermsController extends Controller
 {
     public function show()
     {
-    	$items = Terms::first();
-		return view('admin.terms.terms',compact('items'));
+        $items = Terms::first();
+        return view('admin.terms.terms', compact('items'));
     }
 
     public function update(Request $request)
     {
-    	$data = Terms::first();
-    	$input = $request->all();
+        $data = Terms::first();
+        $input = $request->all();
 
-        if(isset($data))
-        {
+        if (isset($data)) {
             $data->update($input);
-        }
-        else
-        {
+        } else {
             $data = Terms::create($input);
-          
+
             $data->save();
         }
 
-    	return back()->with('success',trans('flash.UpdatedSuccessfully'));
+        return back()->with('success', trans('flash.UpdatedSuccessfully'));
     }
 
     public function showpolicy()
     {
         $items = Terms::first();
-        return view('admin.terms.policy',compact('items'));
+        return view('admin.terms.policy', compact('items'));
     }
 
     public function updatepolicy(Request $request)
@@ -43,17 +40,14 @@ class TermsController extends Controller
         $data = Terms::first();
         $input = $request->all();
 
-        if(isset($data))
-        {
+        if (isset($data)) {
             $data->update($input);
-        }
-        else
-        {
+        } else {
             $data = Terms::create($input);
-          
+
             $data->save();
         }
 
-        return back()->with('success',trans('flash.UpdatedSuccessfully'));
+        return back()->with('success', trans('flash.UpdatedSuccessfully'));
     }
 }

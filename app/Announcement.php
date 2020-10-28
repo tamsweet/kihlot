@@ -7,8 +7,8 @@ use Spatie\Translatable\HasTranslations;
 
 class Announcement extends Model
 {
-	use HasTranslations;
-    
+    use HasTranslations;
+
     public $translatable = ['announsment'];
 
     /**
@@ -18,13 +18,13 @@ class Announcement extends Model
      */
     public function toArray()
     {
-      $attributes = parent::toArray();
-      
-      foreach ($this->getTranslatableAttributes() as $name) {
-          $attributes[$name] = $this->getTranslation($name, app()->getLocale());
-      }
-      
-      return $attributes;
+        $attributes = parent::toArray();
+
+        foreach ($this->getTranslatableAttributes() as $name) {
+            $attributes[$name] = $this->getTranslation($name, app()->getLocale());
+        }
+
+        return $attributes;
     }
 
     protected $table = 'announcements';
@@ -33,11 +33,11 @@ class Announcement extends Model
 
     public function user()
     {
-        return $this->belongsTo('App\User','user_id','id');
+        return $this->belongsTo('App\User', 'user_id', 'id');
     }
 
     public function courses()
     {
-    	return $this->belongsTo('App\Course','course_id','id');
-    }	
+        return $this->belongsTo('App\Course', 'course_id', 'id');
+    }
 }

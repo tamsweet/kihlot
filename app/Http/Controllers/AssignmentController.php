@@ -9,17 +9,17 @@ use App\Course;
 
 class AssignmentController extends Controller
 {
-    public function submit(Request $request, $id) {
+    public function submit(Request $request, $id)
+    {
 
 
-    	if($file = $request->file('assignment'))
-        {
-            $name = time().$file->getClientOriginalName();
+        if ($file = $request->file('assignment')) {
+            $name = time() . $file->getClientOriginalName();
             $file->move('files/assignment', $name);
             $input['assignment'] = $name;
         }
 
-    	$assignment = Assignment::create([
+        $assignment = Assignment::create([
                 'user_id' => Auth::User()->id,
                 'instructor_id' => $request->instructor_id,
                 'course_id' => $id,
@@ -30,13 +30,13 @@ class AssignmentController extends Controller
             ]
         );
 
-        return back()->with('success',trans('flash.SubmittedSuccessfully')); 
+        return back()->with('success', trans('flash.SubmittedSuccessfully'));
 
     }
 
-    public function index() 
+    public function index()
     {
-    	$assignment = Assignment::all();
+        $assignment = Assignment::all();
         return view('admin.course.assignment.index', compact('assignment'));
     }
 
@@ -52,20 +52,17 @@ class AssignmentController extends Controller
         $data = Assignment::findorfail($id);
         $maincourse = Course::findorfail($request->course_id);
         $input['type'] = $request->type;
-        
 
-        if(isset($request->type))
-        {
+
+        if (isset($request->type)) {
             Assignment::where('id', $id)
-                    ->update(['rating' => $request->rating, 'type' => 1]);
-        }
-        else
-        {
+                ->update(['rating' => $request->rating, 'type' => 1]);
+        } else {
             Assignment::where('id', $id)
-                    ->update(['rating' => NULL, 'type' => 0]);
+                ->update(['rating' => NULL, 'type' => 0]);
         }
 
-        return redirect()->route('list.assignment',$maincourse->id);
+        return redirect()->route('list.assignment', $maincourse->id);
 
     }
 
@@ -74,14 +71,12 @@ class AssignmentController extends Controller
 
         $assign = Assignment::find($id);
 
-        if($assign->assignment != null)
-        {
-                
-            $image_file = @file_get_contents(public_path().'/files/assignment/'.$assign->assignment);
+        if ($assign->assignment != null) {
 
-            if($image_file)
-            {
-                unlink(public_path().'/files/assignment/'.$assign->assignment);
+            $image_file = @file_get_contents(public_path() . '/files/assignment/' . $assign->assignment);
+
+            if ($image_file) {
+                unlink(public_path() . '/files/assignment/' . $assign->assignment);
             }
         }
 
@@ -94,33 +89,29 @@ class AssignmentController extends Controller
 
         $assign = Assignment::find($id);
 
-        if($assign->assignment != null)
-        {
-                
-            $image_file = @file_get_contents(public_path().'/files/assignment/'.$assign->assignment);
+        if ($assign->assignment != null) {
 
-            if($image_file)
-            {
-                unlink(public_path().'/files/assignment/'.$assign->assignment);
+            $image_file = @file_get_contents(public_path() . '/files/assignment/' . $assign->assignment);
+
+            if ($image_file) {
+                unlink(public_path() . '/files/assignment/' . $assign->assignment);
             }
         }
 
         Assignment::where('id', $id)->delete();
-        return back()->with('delete',trans('flash.DeletedSuccessfully'));
+        return back()->with('delete', trans('flash.DeletedSuccessfully'));
     }
 
 
     public function view()
     {
 
-        if(Auth::user()->role == "admin") 
-        {
+        if (Auth::user()->role == "admin") {
             $courses = Course::get();
-        }
-        else{
+        } else {
             $courses = Course::where('user_id', Auth::user()->id)->get();
         }
-        
+
         return view('admin.course.assignment.course', compact('courses'));
     }
 

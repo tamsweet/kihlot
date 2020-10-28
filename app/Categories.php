@@ -8,7 +8,7 @@ use Spatie\Translatable\HasTranslations;
 class Categories extends Model
 {
     use HasTranslations;
-    
+
     public $translatable = ['title'];
 
     /**
@@ -18,28 +18,28 @@ class Categories extends Model
      */
     public function toArray()
     {
-      $attributes = parent::toArray();
-      
-      foreach ($this->getTranslatableAttributes() as $name) {
-          $attributes[$name] = $this->getTranslation($name, app()->getLocale());
-      }
-      
-      return $attributes;
+        $attributes = parent::toArray();
+
+        foreach ($this->getTranslatableAttributes() as $name) {
+            $attributes[$name] = $this->getTranslation($name, app()->getLocale());
+        }
+
+        return $attributes;
     }
 
-    protected $table = 'categories';  
+    protected $table = 'categories';
 
     protected $fillable = [
-        'title','icon','slug','featured','status', 'position', 'cat_image'
-    ]; 
+        'title', 'icon', 'slug', 'featured', 'status', 'position', 'cat_image'
+    ];
 
     public function subcategory()
     {
-    	return $this->hasMany('App\SubCategory','category_id');
+        return $this->hasMany('App\SubCategory', 'category_id');
     }
 
     public function courses()
-    {   
-        return $this->hasMany('App\Course','category_id');
+    {
+        return $this->hasMany('App\Course', 'category_id');
     }
 }

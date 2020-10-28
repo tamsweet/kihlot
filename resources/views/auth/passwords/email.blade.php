@@ -12,7 +12,8 @@
         <div class="row">
             <div class="col-lg-4">
                 <div class="nav-bar-btn btm-20">
-                    <a href="{{ url('/') }}" class="btn btn-secondary" title="Home"><i class="fa fa-chevron-left"></i>{{ __('frontstaticword.Backtohome') }}</a>
+                    <a href="{{ url('/') }}" class="btn btn-secondary" title="Home"><i
+                            class="fa fa-chevron-left"></i>{{ __('frontstaticword.Backtohome') }}</a>
                 </div>
             </div>
             <div class="col-lg-4">
@@ -22,16 +23,20 @@
                     @endphp
 
                     @if($logo->logo_type == 'L')
-                        <a href="{{ url('/') }}" title="logo"><img src="{{ asset('images/logo/'.$logo->logo) }}" class="img-fluid" alt="logo"></a>
+                        <a href="{{ url('/') }}" title="logo"><img src="{{ asset('images/logo/'.$logo->logo) }}"
+                                                                   class="img-fluid" alt="logo"></a>
                     @else()
-                        <a href="{{ url('/') }}"><b><div class="logotext">{{ $logo->project_title }}</div></b></a>
+                        <a href="{{ url('/') }}"><b>
+                                <div class="logotext">{{ $logo->project_title }}</div>
+                            </b></a>
                     @endif
                 </div>
             </div>
             <div class="col-lg-4">
                 <div class="Login-btn txt-rgt">
-                    <a href="{{ route('login') }}" class="btn btn-secondary" title="login">{{ __('frontstaticword.Login') }}</a>
-                </div> 
+                    <a href="{{ route('login') }}" class="btn btn-secondary"
+                       title="login">{{ __('frontstaticword.Login') }}</a>
+                </div>
             </div>
         </div>
     </div>
@@ -55,10 +60,13 @@
                             @csrf
 
                             <div class="form-group row">
-                                <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('frontstaticword.E-MailAddress') }}</label>
+                                <label for="email"
+                                       class="col-md-4 col-form-label text-md-right">{{ __('frontstaticword.E-MailAddress') }}</label>
 
                                 <div class="col-md-6">
-                                    <input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" required>
+                                    <input id="email" type="email"
+                                           class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}"
+                                           name="email" value="{{ old('email') }}" required>
 
                                     @if ($errors->has('email'))
                                         <span class="invalid-feedback" role="alert">
@@ -87,5 +95,5 @@
 <!-- end jquery -->
 </body>
 <!-- body end -->
-</html> 
+</html>
 

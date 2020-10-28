@@ -10,7 +10,7 @@ class Page extends Model
 
     protected $table = 'pages';
 
-	protected $fillable = [
-    	'title','slug','details','status'
-	];
+    protected $fillable = [
+        'title', 'slug', 'details', 'status'
+    ];
 }

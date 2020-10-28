@@ -7,8 +7,8 @@ use Spatie\Translatable\HasTranslations;
 
 class CourseChapter extends Model
 {
-	use HasTranslations;
-    
+    use HasTranslations;
+
     public $translatable = ['chapter_name'];
 
     /**
@@ -18,31 +18,31 @@ class CourseChapter extends Model
      */
     public function toArray()
     {
-      $attributes = parent::toArray();
-      
-      foreach ($this->getTranslatableAttributes() as $name) {
-          $attributes[$name] = $this->getTranslation($name, app()->getLocale());
-      }
-      
-      return $attributes;
+        $attributes = parent::toArray();
+
+        foreach ($this->getTranslatableAttributes() as $name) {
+            $attributes[$name] = $this->getTranslation($name, app()->getLocale());
+        }
+
+        return $attributes;
     }
 
     protected $table = 'course_chapters';
 
-    protected $fillable = [ 'course_id', 'chapter_name', 'short_number', 'status', 'file', 'user_id' ];
+    protected $fillable = ['course_id', 'chapter_name', 'short_number', 'status', 'file', 'user_id'];
 
     public function courseclass()
     {
-        return $this->hasMany('App\CourseClass','coursechapter_id');
+        return $this->hasMany('App\CourseClass', 'coursechapter_id');
     }
 
     public function courses()
     {
-    	return $this->belongsTo('App\Course','course_id','id');
+        return $this->belongsTo('App\Course', 'course_id', 'id');
     }
 
     public function user()
     {
-      return $this->belongsTo('App\user','user_id','id');
+        return $this->belongsTo('App\user', 'user_id', 'id');
     }
 }

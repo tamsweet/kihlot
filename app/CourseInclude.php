@@ -7,7 +7,7 @@ use Spatie\Translatable\HasTranslations;
 
 class CourseInclude extends Model
 {
-	use HasTranslations;
+    use HasTranslations;
 
     public $translatable = ['detail'];
 
@@ -18,23 +18,23 @@ class CourseInclude extends Model
      */
     public function toArray()
     {
-      $attributes = parent::toArray();
-      
-      foreach ($this->getTranslatableAttributes() as $name) {
-          $attributes[$name] = $this->getTranslation($name, app()->getLocale());
-      }
-      
-      return $attributes;
+        $attributes = parent::toArray();
+
+        foreach ($this->getTranslatableAttributes() as $name) {
+            $attributes[$name] = $this->getTranslation($name, app()->getLocale());
+        }
+
+        return $attributes;
     }
 
     protected $table = 'course_includes';
 
     protected $fillable = [
-        'course_id', 'detail', 'status','icon'
+        'course_id', 'detail', 'status', 'icon'
     ];
 
     public function courses()
     {
-    	return $this->belongsTo('App\Course','course_id','id');
+        return $this->belongsTo('App\Course', 'course_id', 'id');
     }
 }

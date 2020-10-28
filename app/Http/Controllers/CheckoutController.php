@@ -11,8 +11,8 @@ class CheckoutController extends Controller
 {
     public function checkoutpage(Request $request)
     {
-    	$course = Course::all();
-        $carts = Cart::where('user_id',Auth::User()->id)->get();
+        $course = Course::all();
+        $carts = Cart::where('user_id', Auth::User()->id)->get();
 
         $price_total = $request->price_total;
         $offer_total = $request->offer_total;
@@ -20,6 +20,6 @@ class CheckoutController extends Controller
         $cart_total = $request->cart_total;
 
 
-        return view('front.checkout',compact('course', 'carts','price_total','offer_total', 'offer_percent', 'cart_total'));
+        return view('front.checkout', compact('course', 'carts', 'price_total', 'offer_total', 'offer_percent', 'cart_total'));
     }
 }

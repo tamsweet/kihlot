@@ -6,17 +6,19 @@ use Illuminate\Database\Eloquent\Model;
 
 class Allstate extends Model
 {
-	protected $table = 'allstates';
+    protected $table = 'allstates';
 
-	public $timestamps = false;
+    public $timestamps = false;
 
-	protected $fillable = ['name', 'country_id'];
+    protected $fillable = ['name', 'country_id'];
 
-    public function country(){
-    	return $this->belongsTo('App\Allcountry','country_id','id');
+    public function country()
+    {
+        return $this->belongsTo('App\Allcountry', 'country_id', 'id');
     }
 
-    public function city(){
-    	return $this->hasMany('App\Allcity','state_id');
+    public function city()
+    {
+        return $this->hasMany('App\Allcity', 'state_id');
     }
 }

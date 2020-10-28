@@ -164,23 +164,23 @@ class SkrillController extends Controller
             }
 
             $created_order = Order::create([
-                'course_id' => $course_id,
-                'user_id' => Auth::User()->id,
-                'instructor_id' => $instructor_id,
-                'order_id' => '#' . sprintf("%08d", intval($number) + 1),
-                'transaction_id' => $request->transaction_id,
-                'payment_method' => strtoupper('SKRILL'),
-                'total_amount' => $pay_amount,
-                'coupon_discount' => $cpn_discount,
-                'currency' => $currency->currency,
-                'currency_icon' => $currency->icon,
-                'duration' => $duration,
-                'enroll_start' => $todayDate,
-                'enroll_expire' => $expireDate,
-                'bundle_id' => $bundle_id,
-                'bundle_course_id' => $bundle_course_id,
-                'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
-            ]
+                    'course_id' => $course_id,
+                    'user_id' => Auth::User()->id,
+                    'instructor_id' => $instructor_id,
+                    'order_id' => '#' . sprintf("%08d", intval($number) + 1),
+                    'transaction_id' => $request->transaction_id,
+                    'payment_method' => strtoupper('SKRILL'),
+                    'total_amount' => $pay_amount,
+                    'coupon_discount' => $cpn_discount,
+                    'currency' => $currency->currency,
+                    'currency_icon' => $currency->icon,
+                    'duration' => $duration,
+                    'enroll_start' => $todayDate,
+                    'enroll_expire' => $expireDate,
+                    'bundle_id' => $bundle_id,
+                    'bundle_course_id' => $bundle_course_id,
+                    'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
+                ]
             );
 
             Wishlist::where('user_id', Auth::User()->id)->where('course_id', $cart->course_id)->delete();
@@ -195,17 +195,17 @@ class SkrillController extends Controller
                         if ($cart->courses->user->role == "instructor") {
 
                             $created_payout = PendingPayout::create([
-                                'user_id' => $cart->courses->user_id,
-                                'course_id' => $cart->course_id,
-                                'order_id' => $created_order->id,
-                                'transaction_id' => $request->transaction_id,
-                                'total_amount' => $pay_amount,
-                                'currency' => $currency->currency,
-                                'currency_icon' => $currency->icon,
-                                'instructor_revenue' => $instructor_payout,
-                                'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
-                                'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
-                            ]
+                                    'user_id' => $cart->courses->user_id,
+                                    'course_id' => $cart->course_id,
+                                    'order_id' => $created_order->id,
+                                    'transaction_id' => $request->transaction_id,
+                                    'total_amount' => $pay_amount,
+                                    'currency' => $currency->currency,
+                                    'currency_icon' => $currency->icon,
+                                    'instructor_revenue' => $instructor_payout,
+                                    'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
+                                    'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
+                                ]
                             );
                         }
                     }

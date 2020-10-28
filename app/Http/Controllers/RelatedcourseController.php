@@ -18,7 +18,7 @@ class RelatedcourseController extends Controller
     public function index()
     {
         $related = RelatedCourse::all();
-        return view('admin.course.relatedcourse.index',compact("related"));
+        return view('admin.course.relatedcourse.index', compact("related"));
 
     }
 
@@ -30,58 +30,57 @@ class RelatedcourseController extends Controller
     public function create()
     {
         $relatedcourse = Course::all();
-        return view('admin.course.relatedcourse.insert',compact('relatedcourse')); 
+        return view('admin.course.relatedcourse.insert', compact('relatedcourse'));
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        
-        $related = RelatedCourse::where('main_course_id', $request->main_course_id )->where('course_id', $request->course_id )->first();
 
-        if(!empty($related)){
+        $related = RelatedCourse::where('main_course_id', $request->main_course_id)->where('course_id', $request->course_id)->first();
 
-            return back()->with('delete',trans('flash.AlreadyExist'));
-            
-        }
-        else{
+        if (!empty($related)) {
+
+            return back()->with('delete', trans('flash.AlreadyExist'));
+
+        } else {
             DB::table('related_courses')->insert(
-            array(
+                array(
 
-                'course_id' => $request->course_id,
-                'main_course_id' => $request->main_course_id,
-                'user_id' => $request->user_id,
-                'status' => $request ->status,
-                'created_at'  => \Carbon\Carbon::now()->toDateTimeString(),
+                    'course_id' => $request->course_id,
+                    'main_course_id' => $request->main_course_id,
+                    'user_id' => $request->user_id,
+                    'status' => $request->status,
+                    'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
                 )
             );
-            return back()->with('success',trans('flash.AddedSuccessfully'));  
+            return back()->with('success', trans('flash.AddedSuccessfully'));
         }
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\relatedcourse  $relatedcourse
+     * @param \App\relatedcourse $relatedcourse
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
         $cate = RelatedCourse::find($id);
-        
+
         $courses = Course::all();
-        return view('admin.course.relatedcourse.edit',compact('cate','courses'));
+        return view('admin.course.relatedcourse.edit', compact('cate', 'courses'));
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\relatedcourse  $relatedcourse
+     * @param \App\relatedcourse $relatedcourse
      * @return \Illuminate\Http\Response
      */
     public function edit(relatedcourse $relatedcourse)
@@ -92,41 +91,41 @@ class RelatedcourseController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\relatedcourse  $relatedcourse
+     * @param \Illuminate\Http\Request $request
+     * @param \App\relatedcourse $relatedcourse
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
 
-        DB::table('related_courses')->where('id',$id)
+        DB::table('related_courses')->where('id', $id)
             ->update([
 
-            'course_id' => $request->course_id,
-            'main_course_id' => $request->main_course_id,
-            'user_id' => $request->user_id,
-            'status' => $request ->status,
-            'updated_at'  => \Carbon\Carbon::now()->toDateTimeString(),
+                'course_id' => $request->course_id,
+                'main_course_id' => $request->main_course_id,
+                'user_id' => $request->user_id,
+                'status' => $request->status,
+                'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
 
-        ]);
+            ]);
 
         Session::flash('success', trans('flash.UpdatedSuccessfully'));
-        
 
-        return redirect()->route('course.show',$request->main_course_id);
+
+        return redirect()->route('course.show', $request->main_course_id);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\relatedcourse  $relatedcourse
+     * @param \App\relatedcourse $relatedcourse
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        
-        DB::table('related_courses')->where('id',$id)->delete();
-     
+
+        DB::table('related_courses')->where('id', $id)->delete();
+
         return back();
     }
 }

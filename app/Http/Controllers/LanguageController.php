@@ -9,7 +9,7 @@ use Session;
 
 class LanguageController extends Controller
 {
-   	/**
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
@@ -33,7 +33,7 @@ class LanguageController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -45,23 +45,21 @@ class LanguageController extends Controller
         ]);
 
 
-        
         $input = $request->all();
 
-        $all_def = Language::where('def','=',1)->get();
+        $all_def = Language::where('def', '=', 1)->get();
 
         if (isset($request->def)) {
 
             foreach ($all_def as $value) {
-                $remove_def =  Language::where('id','=',$value->id)->update(['def' => 0]);
+                $remove_def = Language::where('id', '=', $value->id)->update(['def' => 0]);
             }
 
-             $input['def'] = 1;
+            $input['def'] = 1;
 
-        }else{
-            if($all_def->count()<1)
-            {
-                return back()->with('delete','Atleast one language need to set default !');
+        } else {
+            if ($all_def->count() < 1) {
+                return back()->with('delete', 'Atleast one language need to set default !');
             }
 
             $input['def'] = 0;
@@ -76,7 +74,7 @@ class LanguageController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function show()
@@ -87,7 +85,7 @@ class LanguageController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -99,15 +97,15 @@ class LanguageController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
         $language = Language::findOrFail($id);
 
-        $all_def = Language::where('def','=',1)->get();
+        $all_def = Language::where('def', '=', 1)->get();
 
         $request->validate([
             'local' => 'required',
@@ -118,19 +116,17 @@ class LanguageController extends Controller
 
         if (isset($request->def)) {
 
-            
 
             foreach ($all_def as $value) {
-                $remove_def =  Language::where('id','=',$value->id)->update(['def' => 0]);
+                $remove_def = Language::where('id', '=', $value->id)->update(['def' => 0]);
             }
 
-             $input['def'] = 1;
+            $input['def'] = 1;
 
-        }else{
+        } else {
 
-            if($all_def->count()<1)
-            {
-                return back()->with('delete','Atleast one language need to set default !');
+            if ($all_def->count() < 1) {
+                return back()->with('delete', 'Atleast one language need to set default !');
             }
 
             $input['def'] = 0;
@@ -138,7 +134,7 @@ class LanguageController extends Controller
 
 
         $language->update($input);
-        
+
         Session::flash('success', trans('flash.UpdatedSuccessfully'));
         return redirect('admin/lang');
     }
@@ -146,24 +142,24 @@ class LanguageController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
         $language = Language::findOrFail($id);
-        if($language->def ==1){
-             return back()->with('delete', trans('flash.CannotDeleteDefaultLanguage'));
-            
-        }else{
+        if ($language->def == 1) {
+            return back()->with('delete', trans('flash.CannotDeleteDefaultLanguage'));
 
-             $language->delete();
+        } else {
+
+            $language->delete();
             return back()->with('delete', trans('flash.DeletedSuccessfully'));
         }
-        
+
     }
 
-    public function showlang() 
+    public function showlang()
     {
         $languages = Language::all();
         return view('admin.language.show', compact('languages'));
@@ -174,25 +170,18 @@ class LanguageController extends Controller
         // return $local;
         $findlang = Language::where('local', '=', $local)->first();
 
-        if (isset($findlang))
-        {
+        if (isset($findlang)) {
 
-            if (file_exists('../resources/lang/' . $findlang->local . '/frontstaticword.php'))
-            {
+            if (file_exists('../resources/lang/' . $findlang->local . '/frontstaticword.php')) {
                 $file = file_get_contents("../resources/lang/$findlang->local/frontstaticword.php");
                 return view('admin.language.frontstatic.frontstatic', compact('findlang', 'file'));
-            }
-            else
-            {
+            } else {
 
-                if (is_dir('../resources/lang/' . $findlang->local))
-                {
+                if (is_dir('../resources/lang/' . $findlang->local)) {
                     copy("../resources/lang/en/frontstaticword.php", '../resources/lang/' . $findlang->local . '/frontstaticword.php');
                     $file = file_get_contents("../resources/lang/$findlang->local/frontstaticword.php");
                     return view('admin.language.frontstatic.frontstatic', compact('findlang', 'file'));
-                }
-                else
-                {
+                } else {
                     mkdir('../resources/lang/' . $findlang->local);
                     copy("../resources/lang/en/frontstaticword.php", '../resources/lang/' . $findlang->local . '/frontstaticword.php');
                     $file = file_get_contents("../resources/lang/$findlang->local/frontstaticword.php");
@@ -201,9 +190,7 @@ class LanguageController extends Controller
 
             }
 
-        }
-        else
-        {
+        } else {
             return back()
                 ->with('delete', trans('flash.NotFound'));
         }
@@ -212,16 +199,13 @@ class LanguageController extends Controller
     public function frontupdate(Request $request, $local)
     {
         $findlang = Language::where('local', '=', $local)->first();
-        if (isset($findlang))
-        {
+        if (isset($findlang)) {
 
             $transfile = $request->transfile;
             file_put_contents('../resources/lang/' . $findlang->local . '/frontstaticword.php', $transfile . PHP_EOL);
             return back()->with('updated', trans('flash.UpdatedSuccessfully'));
 
-        }
-        else
-        {
+        } else {
             return back()
                 ->with('delete', trans('flash.NotFound'));
         }
@@ -232,25 +216,18 @@ class LanguageController extends Controller
     {
         $findlang = Language::where('local', '=', $local)->first();
 
-        if (isset($findlang))
-        {
+        if (isset($findlang)) {
 
-            if (file_exists('../resources/lang/' . $findlang->local . '/adminstaticword.php'))
-            {
+            if (file_exists('../resources/lang/' . $findlang->local . '/adminstaticword.php')) {
                 $file = file_get_contents("../resources/lang/$findlang->local/adminstaticword.php");
                 return view('admin.language.adminstatic.adminstatic', compact('findlang', 'file'));
-            }
-            else
-            {
+            } else {
 
-                if (is_dir('../resources/lang/' . $findlang->local))
-                {
+                if (is_dir('../resources/lang/' . $findlang->local)) {
                     copy("../resources/lang/en/adminstaticword.php", '../resources/lang/' . $findlang->local . '/adminstaticword.php');
                     $file = file_get_contents("../resources/lang/$findlang->local/adminstaticword.php");
                     return view('admin.language.adminstatic.adminstatic', compact('findlang', 'file'));
-                }
-                else
-                {
+                } else {
                     mkdir('../resources/lang/' . $findlang->local);
                     copy("../resources/lang/en/adminstaticword.php", '../resources/lang/' . $findlang->local . '/adminstaticword.php');
                     $file = file_get_contents("../resources/lang/$findlang->local/adminstaticword.php");
@@ -259,9 +236,7 @@ class LanguageController extends Controller
 
             }
 
-        }
-        else
-        {
+        } else {
             return back()
                 ->with('delete', trans('flash.NotFound'));
         }
@@ -270,46 +245,35 @@ class LanguageController extends Controller
     public function adminupdate(Request $request, $local)
     {
         $findlang = Language::where('local', '=', $local)->first();
-        if (isset($findlang))
-        {
+        if (isset($findlang)) {
 
             $transfile = $request->transfile;
             file_put_contents('../resources/lang/' . $findlang->local . '/adminstaticword.php', $transfile . PHP_EOL);
             return back()->with('updated', trans('flash.UpdatedSuccessfully'));
 
-        }
-        else
-        {
+        } else {
             return back()
                 ->with('delete', trans('flash.NotFound'));
         }
     }
 
 
-
     public function flashmsgword($local)
     {
         $findlang = Language::where('local', '=', $local)->first();
 
-        if (isset($findlang))
-        {
+        if (isset($findlang)) {
 
-            if (file_exists('../resources/lang/' . $findlang->local . '/flash.php'))
-            {
+            if (file_exists('../resources/lang/' . $findlang->local . '/flash.php')) {
                 $file = file_get_contents("../resources/lang/$findlang->local/flash.php");
                 return view('admin.language.flashmsg.flashmsg', compact('findlang', 'file'));
-            }
-            else
-            {
+            } else {
 
-                if (is_dir('../resources/lang/' . $findlang->local))
-                {
+                if (is_dir('../resources/lang/' . $findlang->local)) {
                     copy("../resources/lang/en/flash.php", '../resources/lang/' . $findlang->local . '/flash.php');
                     $file = file_get_contents("../resources/lang/$findlang->local/flash.php");
                     return view('admin.language.flashmsg.flashmsg', compact('findlang', 'file'));
-                }
-                else
-                {
+                } else {
                     mkdir('../resources/lang/' . $findlang->local);
                     copy("../resources/lang/en/flash.php", '../resources/lang/' . $findlang->local . '/flash.php');
                     $file = file_get_contents("../resources/lang/$findlang->local/flash.php");
@@ -318,9 +282,7 @@ class LanguageController extends Controller
 
             }
 
-        }
-        else
-        {
+        } else {
             return back()
                 ->with('delete', trans('flash.NotFound'));
         }
@@ -329,20 +291,17 @@ class LanguageController extends Controller
     public function flashupdate(Request $request, $local)
     {
         $findlang = Language::where('local', '=', $local)->first();
-        if (isset($findlang))
-        {
+        if (isset($findlang)) {
 
             $transfile = $request->transfile;
             file_put_contents('../resources/lang/' . $findlang->local . '/flash.php', $transfile . PHP_EOL);
             return back()->with('updated', trans('flash.UpdatedSuccessfully'));
 
-        }
-        else
-        {
+        } else {
             return back()
                 ->with('delete', trans('flash.NotFound'));
         }
     }
 
-  
+
 }

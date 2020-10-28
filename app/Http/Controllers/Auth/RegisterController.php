@@ -46,7 +46,7 @@ class RegisterController extends Controller
     /**
      * Get a validator for an incoming registration request.
      *
-     * @param  array  $data
+     * @param array $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
     protected function validator(array $data)
@@ -54,7 +54,7 @@ class RegisterController extends Controller
 
         $setting = Setting::first();
 
-        if($setting->captcha_enable == 1){
+        if ($setting->captcha_enable == 1) {
             return Validator::make($data, [
                 'fname' => ['required', 'string', 'max:255'],
                 'lname' => ['required', 'string', 'max:255'],
@@ -62,8 +62,7 @@ class RegisterController extends Controller
                 'password' => ['required', 'string', 'min:6', 'confirmed'],
                 'g-recaptcha-response' => 'required|captcha',
             ]);
-        }
-        else{
+        } else {
 
             return Validator::make($data, [
                 'fname' => ['required', 'string', 'max:255'],
@@ -78,54 +77,47 @@ class RegisterController extends Controller
     /**
      * Create a new user instance after a valid registration.
      *
-     * @param  array  $data
+     * @param array $data
      * @return \App\User
      */
     protected function create(array $data)
     {
         $setting = Setting::first();
 
-        if($setting->mobile_enable == 1)
-        {
+        if ($setting->mobile_enable == 1) {
             $mobile = $data['mobile'];
-        }
-        else
-        {
+        } else {
             $mobile = NULL;
         }
 
-        if($setting->verify_enable == 0)
-        {
+        if ($setting->verify_enable == 0) {
             $verified = \Carbon\Carbon::now()->toDateTimeString();
-        }
-        else
-        {
+        } else {
             $verified = NULL;
         }
-        
-        
+
+
         $user = User::create([
 
             'fname' => $data['fname'],
             'lname' => $data['lname'],
             'email' => $data['email'],
             'mobile' => $mobile,
-            'email_verified_at'  => $verified,
+            'email_verified_at' => $verified,
             'password' => Hash::make($data['password']),
         ]);
-        
 
-        if($setting->w_email_enable == 1){
-            try{
-               
+
+        if ($setting->w_email_enable == 1) {
+            try {
+
                 Mail::to($data['email'])->send(new WelcomeUser($user));
-               
-            }
-            catch(\Swift_TransportException $e){
+
+            } catch (\Swift_TransportException $e) {
 
             }
         }
-        
+
 
         return $user;
     }

@@ -8,7 +8,7 @@ use Spatie\Translatable\HasTranslations;
 class SubCategory extends Model
 {
     use HasTranslations;
-    
+
     public $translatable = ['title'];
 
     /**
@@ -18,33 +18,33 @@ class SubCategory extends Model
      */
     public function toArray()
     {
-      $attributes = parent::toArray();
-      
-      foreach ($this->getTranslatableAttributes() as $name) {
-          $attributes[$name] = $this->getTranslation($name, app()->getLocale());
-      }
-      
-      return $attributes;
-    } 
+        $attributes = parent::toArray();
 
-    protected $table = 'sub_categories';   
+        foreach ($this->getTranslatableAttributes() as $name) {
+            $attributes[$name] = $this->getTranslation($name, app()->getLocale());
+        }
+
+        return $attributes;
+    }
+
+    protected $table = 'sub_categories';
 
     protected $fillable = [
-        'title','icon','slug','featured','status', 'category_id'
-    ]; 
+        'title', 'icon', 'slug', 'featured', 'status', 'category_id'
+    ];
 
     public function childcategory()
     {
-    	return $this->hasMany('App\ChildCategory','subcategory_id');
+        return $this->hasMany('App\ChildCategory', 'subcategory_id');
     }
 
     public function categories()
     {
-    	return $this->belongsTo('App\Categories','category_id','id');
+        return $this->belongsTo('App\Categories', 'category_id', 'id');
     }
 
     public function courses()
-    {   
-        return $this->hasMany('App\Course','subcategory_id');
+    {
+        return $this->hasMany('App\Course', 'subcategory_id');
     }
 }

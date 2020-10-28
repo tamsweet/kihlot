@@ -35,14 +35,14 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $category = Categories::orderBy('position','ASC')->get();
+        $category = Categories::orderBy('position', 'ASC')->get();
         $sliders = Slider::orderBy('position', 'ASC')->get();
         $facts = SliderFacts::limit(3)->get();
         $categories = CategorySlider::first();
         $cor = Course::all();
         $bundles = BundleCourse::get();
         $meetings = Meeting::where('link_by', NULL)->get();
-        $bigblue = BBL::where('is_ended','!=',1)->where('link_by', NULL)->get();
+        $bigblue = BBL::where('is_ended', '!=', 1)->where('link_by', NULL)->get();
         $testi = Testimonial::all();
         $trusted = Trusted::all();
 

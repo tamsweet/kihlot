@@ -10,37 +10,37 @@ use App\Mail\ContactMail;
 
 class ContactUsController extends Controller
 {
-	public function index()
-	{
-		$items = Contact::all();
-    	return view('admin.contact.index',compact('items'));
-	}
+    public function index()
+    {
+        $items = Contact::all();
+        return view('admin.contact.index', compact('items'));
+    }
 
-	public function edit($id)
-	{
-    	$show = Contact::where('id', $id)->first();
-    	return view('admin.contact.view',compact('show'));
-	}
+    public function edit($id)
+    {
+        $show = Contact::where('id', $id)->first();
+        return view('admin.contact.view', compact('show'));
+    }
 
-	public function update(Request $request, $id)
-	{
-		$data = Contact::findorfail($id);
+    public function update(Request $request, $id)
+    {
+        $data = Contact::findorfail($id);
         $input = $request->all();
         $data->update($input);
 
-		return redirect()->route('usermessage.index');
-	}
-
-	public function destroy($id)
-	{
-		Contact::where('id',$id)->delete();
         return redirect()->route('usermessage.index');
-	}
+    }
+
+    public function destroy($id)
+    {
+        Contact::where('id', $id)->delete();
+        return redirect()->route('usermessage.index');
+    }
 
     public function usermessage(Request $request)
     {
 
-    	$data = $this->validate($request,[
+        $data = $this->validate($request, [
             'fname' => 'required',
             'email' => 'required',
             'mobile' => 'required',
@@ -48,12 +48,12 @@ class ContactUsController extends Controller
         ]);
 
         $created_contact = Contact::create([
-            'fname' => $request->fname,
-            'email' => $request->email,
-            'mobile' => $request->mobile,
-            'message' => $request->message,
-            'created_at'  => \Carbon\Carbon::now()->toDateTimeString(),
-            'updated_at'  => \Carbon\Carbon::now()->toDateTimeString(),
+                'fname' => $request->fname,
+                'email' => $request->email,
+                'mobile' => $request->mobile,
+                'message' => $request->message,
+                'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
+                'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
             ]
         );
 
@@ -61,31 +61,26 @@ class ContactUsController extends Controller
         $setting = Setting::first();
 
 
+        if ($created_contact) {
+            if ($setting->wel_email != NULL) {
+                if (env('MAIL_USERNAME') != null) {
+                    try {
 
-        if($created_contact)
-        {
-            if($setting->wel_email != NULL) 
-            {
-                if (env('MAIL_USERNAME')!=null) 
-                {
-                    try{
-                        
                         /*sending email*/
                         $x = 'Hi';
                         $contact = $created_contact;
                         Mail::to($setting['wel_email'])->send(new ContactMail($x, $contact));
 
 
-                    }catch(\Swift_TransportException $e){
-                        
-                        
+                    } catch (\Swift_TransportException $e) {
+
+
                     }
                 }
             }
         }
-        
-        
-        
-        return back()->with('success',trans('flash.RequestSuccessfully'));
+
+
+        return back()->with('success', trans('flash.RequestSuccessfully'));
     }
 }

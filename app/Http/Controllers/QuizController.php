@@ -30,31 +30,31 @@ class QuizController extends Controller
      */
     public function create()
     {
-        // 
+        //
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
         $request->validate([
-          'course_id' => 'required',
-          'topic_id' => 'required',
-          'question' => 'required',
-          'a' => 'required',
-          'b' => 'required',
-          'c' => 'required',
-          'd' => 'required',
-          'answer' => 'required',
+            'course_id' => 'required',
+            'topic_id' => 'required',
+            'question' => 'required',
+            'a' => 'required',
+            'b' => 'required',
+            'c' => 'required',
+            'd' => 'required',
+            'answer' => 'required',
         ]);
 
         $input = $request->all();
 
-        
+
         $input['answer_exp'] = $request->answer_exp;
         Quiz::create($input);
         return back()->with('success', trans('flash.AddedSuccessfully'));
@@ -63,7 +63,7 @@ class QuizController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Quiz  $quiz
+     * @param \App\Quiz $quiz
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -76,7 +76,7 @@ class QuizController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Quiz  $quiz
+     * @param \App\Quiz $quiz
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -89,26 +89,26 @@ class QuizController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Quiz  $quiz
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Quiz $quiz
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
         $question = Quiz::findOrFail($id);
         $request->validate([
-          'topic_id' => 'required',
-          'question' => 'required',
-          'a' => 'required',
-          'b' => 'required',
-          'c' => 'required',
-          'd' => 'required',
-          'answer' => 'required',
+            'topic_id' => 'required',
+            'question' => 'required',
+            'a' => 'required',
+            'b' => 'required',
+            'c' => 'required',
+            'd' => 'required',
+            'answer' => 'required',
         ]);
 
         $input = $request->all();
 
-        
+
         $input['answer_exp'] = $request->answer_exp;
         $question->update($input);
         return back()->with('success', trans('flash.UpdatedSuccessfully'));
@@ -117,7 +117,7 @@ class QuizController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Quiz  $quiz
+     * @param \App\Quiz $quiz
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)

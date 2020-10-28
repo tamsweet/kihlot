@@ -11,15 +11,15 @@ class AdminPayoutController extends Controller
 {
     public function index()
     {
-    	$users = User::where('role', 'instructor')->get();
-    	return view('admin.revenue.index', compact('users'));
+        $users = User::where('role', 'instructor')->get();
+        return view('admin.revenue.index', compact('users'));
 
     }
 
     public function pending($id)
     {
-    	$payout = PendingPayout::where('user_id', $id)->where('status', '0')->get();
-    	return view('admin.revenue.pending', compact('payout', 'id'));
+        $payout = PendingPayout::where('user_id', $id)->where('status', '0')->get();
+        return view('admin.revenue.pending', compact('payout', 'id'));
     }
 
     public function paid($id)
@@ -31,7 +31,7 @@ class AdminPayoutController extends Controller
 
     public function bulk_payout(Request $request, $id)
     {
-        
+
         $user = User::where('id', $id)->first();
 
         $validator = Validator::make($request->all(), [
@@ -45,7 +45,7 @@ class AdminPayoutController extends Controller
 
         $payout = PendingPayout::all();
 
-        $allchecked =  $request->checked;
+        $allchecked = $request->checked;
 
 
         $total = 0;
@@ -53,7 +53,7 @@ class AdminPayoutController extends Controller
         foreach ($request->checked as $checked) {
 
             $payout = PendingPayout::findOrFail($checked);
-            
+
             $total = $total + $payout->instructor_revenue;
 
         }

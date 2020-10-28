@@ -12,7 +12,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-4">
-                
+
             </div>
             <div class="col-lg-4">
                 <div class="logo text-center btm-10">
@@ -21,24 +21,28 @@
                     @endphp
 
                     @if($logo->logo_type == 'L')
-                        <a href="{{ url('/') }}" title="logo"><img src="{{ asset('images/logo/'.$logo->logo) }}" class="img-fluid" alt="logo"></a>
+                        <a href="{{ url('/') }}" title="logo"><img src="{{ asset('images/logo/'.$logo->logo) }}"
+                                                                   class="img-fluid" alt="logo"></a>
                     @else()
-                        <a href="{{ url('/') }}"><b><div class="logotext">{{ $logo->project_title }}</div></b></a>
+                        <a href="{{ url('/') }}"><b>
+                                <div class="logotext">{{ $logo->project_title }}</div>
+                            </b></a>
                     @endif
                 </div>
             </div>
             <div class="col-lg-4">
                 <div class="Login-btn txt-rgt">
-                    <a href="{{ route('logout') }}" class="btn btn-secondary" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                       
+                    <a href="{{ route('logout') }}" class="btn btn-secondary"
+                       onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+
                         {{ __('frontstaticword.Logout') }}
-                        
+
                         <form id="logout-form" action="{{ route('logout') }}" method="POST" class="display-none">
                             @csrf
                         </form>
-                       
+
                     </a>
-                </div> 
+                </div>
             </div>
         </div>
     </div>
@@ -60,7 +64,8 @@
                         @endif
 
                         {{ __('Before proceeding, please check your email for a verification link.') }}
-                        {{ __('If you did not receive the email') }}, <a href="{{ route('verification.resend') }}">{{ __('click here to request another') }}</a>.
+                        {{ __('If you did not receive the email') }}, <a
+                            href="{{ route('verification.resend') }}">{{ __('click here to request another') }}</a>.
                     </div>
                 </div>
             </div>
@@ -72,4 +77,4 @@
 <!-- end jquery -->
 </body>
 <!-- body end -->
-</html> 
+</html>

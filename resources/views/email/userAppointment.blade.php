@@ -1,16 +1,16 @@
 @component('mail::message')
-# Appointment
-Hi {{ $request->instructor->fname }} !!
-<br>
-{{ $x }}.
-<br>
+    # Appointment
+    Hi {{ $request->instructor->fname }} !!
+    <br>
+    {{ $x }}.
+    <br>
 
-@component('mail::button', ['url' => url('appointment/'. $request['id'])])
-View Appointment
-@endcomponent
+    @component('mail::button', ['url' => url('appointment/'. $request['id'])])
+        View Appointment
+    @endcomponent
 
 
 
-Thanks,<br>
-{{ config('app.name') }}
+    Thanks,<br>
+    {{ config('app.name') }}
 @endcomponent

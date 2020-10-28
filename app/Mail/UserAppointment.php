@@ -10,6 +10,7 @@ use Illuminate\Queue\SerializesModels;
 class UserAppointment extends Mailable
 {
     use Queueable, SerializesModels;
+
     public $x, $request;
 
     /**

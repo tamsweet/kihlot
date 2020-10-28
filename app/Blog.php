@@ -7,8 +7,8 @@ use Spatie\Translatable\HasTranslations;
 
 class Blog extends Model
 {
-	use HasTranslations;
-    
+    use HasTranslations;
+
     public $translatable = ['heading', 'detail', 'text'];
 
     /**
@@ -18,21 +18,21 @@ class Blog extends Model
      */
     public function toArray()
     {
-      $attributes = parent::toArray();
-      
-      foreach ($this->getTranslatableAttributes() as $name) {
-          $attributes[$name] = $this->getTranslation($name, app()->getLocale());
-      }
-      
-      return $attributes;
-    } 
+        $attributes = parent::toArray();
 
-	protected $table = 'blogs';
+        foreach ($this->getTranslatableAttributes() as $name) {
+            $attributes[$name] = $this->getTranslation($name, app()->getLocale());
+        }
+
+        return $attributes;
+    }
+
+    protected $table = 'blogs';
 
     protected $fillable = ['user_id', 'date', 'image', 'heading', 'detail', 'text', 'approved', 'status'];
-     
+
     public function user()
     {
-        return $this->belongsTo('App\User','user_id','id');
+        return $this->belongsTo('App\User', 'user_id', 'id');
     }
 }

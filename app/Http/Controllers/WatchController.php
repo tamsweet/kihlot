@@ -12,7 +12,7 @@ use Crypt;
 use Redirect;
 use App\BundleCourse;
 use App\WatchCourse;
-Use Alert;
+use Alert;
 use App\Setting;
 
 class WatchController extends Controller
@@ -20,9 +20,8 @@ class WatchController extends Controller
     public function watch($id)
     {
 
-        if(Auth::check())
-        {
-        	$order = Order::where('user_id', Auth::User()->id)->where('course_id', $id)->first();
+        if (Auth::check()) {
+            $order = Order::where('user_id', Auth::User()->id)->where('course_id', $id)->first();
 
             $courses = Course::where('id', $id)->first();
 
@@ -32,80 +31,66 @@ class WatchController extends Controller
 
             $course_id = array();
 
-            foreach($bundle as $b)
-            {
-               $bundle = BundleCourse::where('id', $b->bundle_id)->first();
+            foreach ($bundle as $b) {
+                $bundle = BundleCourse::where('id', $b->bundle_id)->first();
                 array_push($course_id, $bundle->course_id);
             }
 
             $course_id = array_values(array_filter($course_id));
 
             $course_id = array_flatten($course_id);
-        
-
-            if(Auth::User()->role == "admin")
-            {
-            	return view('watch',compact('courses'));
-            }
-            else
-            {
-                if(!empty($order))
-                {
-
-                    $coursewatch = WatchCourse::where('course_id','=',$id)->where('user_id', Auth::User()->id)->first();
 
 
-                    if($gsetting->device_control == 1)
-                    {
+            if (Auth::User()->role == "admin") {
+                return view('watch', compact('courses'));
+            } else {
+                if (!empty($order)) {
 
-                        if(!$coursewatch)
-                        {
+                    $coursewatch = WatchCourse::where('course_id', '=', $id)->where('user_id', Auth::User()->id)->first();
+
+
+                    if ($gsetting->device_control == 1) {
+
+                        if (!$coursewatch) {
 
                             $watching = WatchCourse::create([
-                                'user_id'    => Auth::user()->id,
-                                'course_id'  => $id,
-                                'start_time' => \Carbon\Carbon::now()->toDateTimeString(),
-                                'active'     => '1',
-                                'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
-                                'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
+                                    'user_id' => Auth::user()->id,
+                                    'course_id' => $id,
+                                    'start_time' => \Carbon\Carbon::now()->toDateTimeString(),
+                                    'active' => '1',
+                                    'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
+                                    'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
                                 ]
                             );
 
-                            return view('watch',compact('courses'));
+                            return view('watch', compact('courses'));
 
-                        }
-                        else{
-                          
-                            if($coursewatch->active == 0){
+                        } else {
 
-                               
+                            if ($coursewatch->active == 0) {
+
+
                                 $coursewatch->active = 1;
                                 $coursewatch->save();
-                                return view('watch',compact('courses'));
-                            }
-                            else{
+                                return view('watch', compact('courses'));
+                            } else {
 
                                 Alert::error('Active', 'User Already Watching Course !!');
-                                return back(); 
+                                return back();
                             }
 
                         }
-                    }
-                    else{
-                        return view('watch',compact('courses'));
+                    } else {
+                        return view('watch', compact('courses'));
                     }
 
-                    
-                }
-                elseif(isset($course_id) && in_array($id, $course_id))
-                {
-                    return view('watch',compact('courses'));
-                }
-                else
-                {
+
+                } elseif (isset($course_id) && in_array($id, $course_id)) {
+                    return view('watch', compact('courses'));
+                } else {
                     return back()->with('delete', trans('flash.UnauthorizedAction'));
                 }
-                
+
             }
         }
         return Redirect::route('login')->withInput()->with('delete', trans('flash.PleaseLogin'));
@@ -115,12 +100,11 @@ class WatchController extends Controller
 
     public function watchclass($id)
     {
-        $class = CourseClass::where('id',$id)->first();
+        $class = CourseClass::where('id', $id)->first();
 
         $courses = Course::where('id', $class->course_id)->first();
 
-        if(Auth::check())
-        { 
+        if (Auth::check()) {
 
             $order = Order::where('user_id', Auth::User()->id)->where('course_id', $courses->id)->first();
 
@@ -130,9 +114,8 @@ class WatchController extends Controller
 
             $course_id = array();
 
-            foreach($bundle as $b)
-            {
-               $bundle = BundleCourse::where('id', $b->bundle_id)->first();
+            foreach ($bundle as $b) {
+                $bundle = BundleCourse::where('id', $b->bundle_id)->first();
                 array_push($course_id, $bundle->course_id);
             }
 
@@ -141,64 +124,51 @@ class WatchController extends Controller
             $course_id = array_flatten($course_id);
 
 
-            if(Auth::User()->role == "admin")
-            {
-                return view('classwatch',compact('class'));
-            }
-            else
-            {
-                if(!empty($order))
-                {
-                    $coursewatch = WatchCourse::where('course_id','=',$courses->id)->where('user_id', Auth::User()->id)->first();
+            if (Auth::User()->role == "admin") {
+                return view('classwatch', compact('class'));
+            } else {
+                if (!empty($order)) {
+                    $coursewatch = WatchCourse::where('course_id', '=', $courses->id)->where('user_id', Auth::User()->id)->first();
 
 
-                    if($gsetting->device_control == 1)
-                    {
+                    if ($gsetting->device_control == 1) {
 
-                        if(!$coursewatch)
-                        {
+                        if (!$coursewatch) {
 
                             $watching = WatchCourse::create([
-                                'user_id'    => Auth::user()->id,
-                                'course_id'  => $courses->id,
-                                'start_time' => \Carbon\Carbon::now()->toDateTimeString(),
-                                'active'     => '1',
-                                'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
-                                'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
+                                    'user_id' => Auth::user()->id,
+                                    'course_id' => $courses->id,
+                                    'start_time' => \Carbon\Carbon::now()->toDateTimeString(),
+                                    'active' => '1',
+                                    'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
+                                    'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
                                 ]
                             );
 
-                            return view('classwatch',compact('class'));
+                            return view('classwatch', compact('class'));
 
-                        }
-                        else{
-                          
-                            if($coursewatch->active == 0){
+                        } else {
 
-                               
+                            if ($coursewatch->active == 0) {
+
+
                                 $coursewatch->active = 1;
                                 $coursewatch->save();
-                                return view('classwatch',compact('class'));
-                            }
-                            else{
+                                return view('classwatch', compact('class'));
+                            } else {
 
                                 Alert::error('Active', 'User Already Watching Course !!');
-                                return back(); 
+                                return back();
                             }
 
                         }
+                    } else {
+                        return view('classwatch', compact('class'));
                     }
-                    else{
-                        return view('classwatch',compact('class'));
-                    }
-                   
-                }
-                elseif(isset($course_id) && in_array($courses->id, $course_id))
-                {
-                    return view('classwatch',compact('class'));
-                }
-                else
-                {
+
+                } elseif (isset($course_id) && in_array($courses->id, $course_id)) {
+                    return view('classwatch', compact('class'));
+                } else {
                     return back()->with('delete', trans('flash.UnauthorizedAction'));
                 }
             }
@@ -212,8 +182,7 @@ class WatchController extends Controller
         $course = $course_id;
         $url = Crypt::decrypt($url);
 
-        if(Auth::check())
-        { 
+        if (Auth::check()) {
 
             $order = Order::where('user_id', Auth::User()->id)->where('course_id', $course)->first();
 
@@ -223,9 +192,8 @@ class WatchController extends Controller
 
             $course_id = array();
 
-            foreach($bundle as $b)
-            {
-               $bundle = BundleCourse::where('id', $b->bundle_id)->first();
+            foreach ($bundle as $b) {
+                $bundle = BundleCourse::where('id', $b->bundle_id)->first();
                 array_push($course_id, $bundle->course_id);
             }
 
@@ -234,48 +202,39 @@ class WatchController extends Controller
             $course_id = array_flatten($course_id);
 
 
-            if(Auth::User()->role == "admin")
-            {
-                return view('iframe',compact('url', 'course'));
-            }
-            elseif(isset($course_id) && in_array($course, $course_id))
-            {
-                return view('iframe',compact('url', 'course'));
-            }
-            else
-            {
-                if(!empty($order))
-                { 
-                    return view('iframe',compact('url', 'course'));
-                }
-                else
-                {
+            if (Auth::User()->role == "admin") {
+                return view('iframe', compact('url', 'course'));
+            } elseif (isset($course_id) && in_array($course, $course_id)) {
+                return view('iframe', compact('url', 'course'));
+            } else {
+                if (!empty($order)) {
+                    return view('iframe', compact('url', 'course'));
+                } else {
                     return back()->with('delete', trans('flash.UnauthorizedAction'));
                 }
             }
 
         }
         return Redirect::route('login')->withInput()->with('delete', trans('flash.PleaseLogin'));
-        
+
     }
 
     public function lightbox($id)
     {
-        $class = CourseClass::where('id',$id)->first();
-        
-        return view('lightbox',compact('class'));
+        $class = CourseClass::where('id', $id)->first();
+
+        return view('lightbox', compact('class'));
     }
 
 
     public function audioclass($id)
     {
-        $class = CourseClass::where('id',$id)->first();
+        $class = CourseClass::where('id', $id)->first();
 
         $courses = Course::where('id', $class->course_id)->first();
 
 
-        if(Auth::check())
-        { 
+        if (Auth::check()) {
 
             $order = Order::where('user_id', Auth::User()->id)->where('course_id', $courses->id)->first();
 
@@ -285,9 +244,8 @@ class WatchController extends Controller
 
             $course_id = array();
 
-            foreach($bundle as $b)
-            {
-               $bundle = BundleCourse::where('id', $b->bundle_id)->first();
+            foreach ($bundle as $b) {
+                $bundle = BundleCourse::where('id', $b->bundle_id)->first();
                 array_push($course_id, $bundle->course_id);
             }
 
@@ -296,65 +254,52 @@ class WatchController extends Controller
             $course_id = array_flatten($course_id);
 
 
-            if(Auth::User()->role == "admin")
-            {
-                return view('audioclass',compact('class'));
-            }
-            else
-            {
-                if(!empty($order))
-                {
+            if (Auth::User()->role == "admin") {
+                return view('audioclass', compact('class'));
+            } else {
+                if (!empty($order)) {
 
-                    $coursewatch = WatchCourse::where('course_id','=',$courses->id)->where('user_id', Auth::User()->id)->first();
+                    $coursewatch = WatchCourse::where('course_id', '=', $courses->id)->where('user_id', Auth::User()->id)->first();
 
 
-                    if($gsetting->device_control == 1)
-                    {
+                    if ($gsetting->device_control == 1) {
 
-                        if(!$coursewatch)
-                        {
+                        if (!$coursewatch) {
 
                             $watching = WatchCourse::create([
-                                'user_id'    => Auth::user()->id,
-                                'course_id'  => $courses->id,
-                                'start_time' => \Carbon\Carbon::now()->toDateTimeString(),
-                                'active'     => '1',
-                                'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
-                                'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
+                                    'user_id' => Auth::user()->id,
+                                    'course_id' => $courses->id,
+                                    'start_time' => \Carbon\Carbon::now()->toDateTimeString(),
+                                    'active' => '1',
+                                    'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
+                                    'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
                                 ]
                             );
 
-                            return view('audioclass',compact('class'));
+                            return view('audioclass', compact('class'));
 
-                        }
-                        else{
-                          
-                            if($coursewatch->active == 0){
+                        } else {
 
-                               
+                            if ($coursewatch->active == 0) {
+
+
                                 $coursewatch->active = 1;
                                 $coursewatch->save();
-                                return view('audioclass',compact('class'));
-                            }
-                            else{
+                                return view('audioclass', compact('class'));
+                            } else {
 
                                 Alert::error('Active', 'User Already Watching Course !!');
-                                return back(); 
+                                return back();
                             }
 
                         }
+                    } else {
+                        return view('audioclass', compact('class'));
                     }
-                    else{
-                        return view('audioclass',compact('class'));
-                    }
-                    
-                }
-                elseif(isset($course_id) && in_array($courses->id, $course_id))
-                {
-                    return view('audioclass',compact('class'));
-                }
-                else
-                {
+
+                } elseif (isset($course_id) && in_array($courses->id, $course_id)) {
+                    return view('audioclass', compact('class'));
+                } else {
                     return back()->with('delete', trans('flash.UnauthorizedAction'));
                 }
             }
@@ -363,5 +308,5 @@ class WatchController extends Controller
         return Redirect::route('login')->withInput()->with('delete', trans('flash.PleaseLogin'));
     }
 
-   
+
 }

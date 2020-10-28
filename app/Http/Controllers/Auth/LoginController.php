@@ -33,24 +33,19 @@ class LoginController extends Controller
     public function authenticated()
     {
 
-        if (Auth::User()->status == 1)
-        {
-           
-            if ( Auth::User()->role == "admin" || Auth::User()->role == "instructor" ) 
-            {
+        if (Auth::User()->status == 1) {
+
+            if (Auth::User()->role == "admin" || Auth::User()->role == "instructor") {
                 // do your magic here
                 return redirect()->route('admin.index');
+            } else {
+                return redirect('/home');
+
             }
-            else
-            {
-                 return redirect('/home');
-      
-            }
-        }
-        else{
-            
+        } else {
+
             Auth::logout();
-            return redirect()->route('login')->with('delete','You are deactivated !'); 
+            return redirect()->route('login')->with('delete', 'You are deactivated !');
         }
     }
 
@@ -78,28 +73,24 @@ class LoginController extends Controller
         $remember = (Input::has('remember')) ? true : false;
 
         // attempt to do the login
-       
 
-        if(Auth::attempt(['email' => $request->get('email') , 'password' => $request->get('password') ,
-        'status' => 1], $request->remember)){
-        
-                return redirect()->intended('/home');
-        }
-        else
-        {
+
+        if (Auth::attempt(['email' => $request->get('email'), 'password' => $request->get('password'),
+            'status' => 1], $request->remember)) {
+
+            return redirect()->intended('/home');
+        } else {
             $errors = new MessageBag(['email' => ['Email or password is invalid.']]);
             return Redirect::back()->withErrors($errors)->withInput($request->except('password'));
         }
 
 
-
         if ($user) {
             Auth::login($user);
-            return redirect()-> action('HomeController@index');
-        }
-        else {
-            return view('auth.register', ['name'=> $userSocial->getName(), 
-                                            'email' => $userSocial->getEmail()]);
+            return redirect()->action('HomeController@index');
+        } else {
+            return view('auth.register', ['name' => $userSocial->getName(),
+                'email' => $userSocial->getEmail()]);
         }
     }
 }

@@ -17,10 +17,10 @@ class RequestInvolveController extends Controller
      */
     public function index()
     {
-        $all_course = Course::where('involvement_request','1')->where('user_id', '!=', Auth::user()->id)->get();
-        $instructors = User::where('status','1')->where('role','instructor')->get();
-        
-        return view('admin.requestinvolve.index',compact('all_course','instructors'));
+        $all_course = Course::where('involvement_request', '1')->where('user_id', '!=', Auth::user()->id)->get();
+        $instructors = User::where('status', '1')->where('role', 'instructor')->get();
+
+        return view('admin.requestinvolve.index', compact('all_course', 'instructors'));
     }
 
     /**
@@ -36,7 +36,7 @@ class RequestInvolveController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -47,7 +47,7 @@ class RequestInvolveController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -58,7 +58,7 @@ class RequestInvolveController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -69,8 +69,8 @@ class RequestInvolveController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -81,7 +81,7 @@ class RequestInvolveController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)

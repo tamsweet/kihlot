@@ -7,8 +7,8 @@ use Spatie\Translatable\HasTranslations;
 
 class Quiz extends Model
 {
-	use HasTranslations;
-    
+    use HasTranslations;
+
     public $translatable = ['question'];
 
     /**
@@ -18,22 +18,22 @@ class Quiz extends Model
      */
     public function toArray()
     {
-      $attributes = parent::toArray();
-      
-      foreach ($this->getTranslatableAttributes() as $name) {
-          $attributes[$name] = $this->getTranslation($name, app()->getLocale());
-      }
-      
-      return $attributes;
-    } 
+        $attributes = parent::toArray();
 
-	protected $table = 'quiz_questions';
+        foreach ($this->getTranslatableAttributes() as $name) {
+            $attributes[$name] = $this->getTranslation($name, app()->getLocale());
+        }
+
+        return $attributes;
+    }
+
+    protected $table = 'quiz_questions';
 
     protected $fillable = ['course_id', 'topic_id', 'question', 'a', 'b', 'c', 'd', 'answer'];
 
     public function quizanswers()
     {
-    	return $this->hasMany('App\QuizAnswer','question_id');
+        return $this->hasMany('App\QuizAnswer', 'question_id');
     }
-    
+
 }

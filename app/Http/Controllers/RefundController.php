@@ -18,13 +18,13 @@ use App\RefundPolicy;
 
 class RefundController extends Controller
 {
-	public function __construct()
+    public function __construct()
     {
         /** PayPal api context **/
         $paypal_conf = \Config::get('paypal');
         $this->_api_context = new ApiContext(new OAuthTokenCredential(
-            $paypal_conf['client_id'],
-            $paypal_conf['secret'])
+                $paypal_conf['client_id'],
+                $paypal_conf['secret'])
         );
         $this->_api_context->setConfig($paypal_conf['settings']);
     }
@@ -37,58 +37,43 @@ class RefundController extends Controller
 
     public function edit($id)
     {
-    	$refunds = RefundCourse::where('id', $id)->first();
+        $refunds = RefundCourse::where('id', $id)->first();
         return view('admin.refund_order.view', compact('refunds'));
     }
 
     public function update(Request $request, $id)
     {
 
-    	$refnd = RefundCourse::where('id', $id)->first();
+        $refnd = RefundCourse::where('id', $id)->first();
 
-    	if(Auth::check())
-    	{
+        if (Auth::check()) {
 
-    		if(Auth::user()->role == "admin")
-	    	{
+            if (Auth::user()->role == "admin") {
 
-	    		if($refnd->status == 0)
-	    		{
+                if ($refnd->status == 0) {
 
-	    			if(isset($refnd))
-	    			{
+                    if (isset($refnd)) {
 
-    					if($refnd->payment_method == 'PayPal') 
-    					{
+                        if ($refnd->payment_method == 'PayPal') {
 
                             return $this->refundwithPaypal($request, $refnd);
 
-                        }
-                        elseif($refnd->payment_method == 'Stripe')
-                        {
+                        } elseif ($refnd->payment_method == 'Stripe') {
 
                             return $this->refundwithStripe($request, $refnd);
 
                         }
-	    				
-	    			}
-	    			else 
-		    		{
-		                return back()->with('delete', trans('flash.RefundNotFound'));
-		            }
-	    		}
-	    		else 
-	    		{
-	                return back()->with('delete', trans('flash.RefundAlready'));
-	            }
-	    	}
-	    	else 
-	    	{
-	            return back()->with('delete', trans('flash.UnauthorizedAction'));
-	        }
-    	}
-    	else 
-    	{
+
+                    } else {
+                        return back()->with('delete', trans('flash.RefundNotFound'));
+                    }
+                } else {
+                    return back()->with('delete', trans('flash.RefundAlready'));
+                }
+            } else {
+                return back()->with('delete', trans('flash.UnauthorizedAction'));
+            }
+        } else {
             return back()->with('delete', trans('flash.UnauthorizedAction'));
         }
 
@@ -97,7 +82,7 @@ class RefundController extends Controller
 
     public function refundwithPaypal($request, $refnd)
     {
-    	$refundrequest = RefundCourse::find($refnd->id);
+        $refundrequest = RefundCourse::find($refnd->id);
 
 
         $currency = Currency::first();
@@ -108,36 +93,33 @@ class RefundController extends Controller
         $saleId = $refundrequest->order->sale_id;
         $refund = new Refund();
         $refund->setAmount($amt);
-        $sale = new Sale();                         
+        $sale = new Sale();
         $sale->setId($saleId);
-        
 
-        try
-        {
+
+        try {
             $refundedSale = $sale->refund($refund, $this->_api_context);
 
             RefundCourse::where('id', $refnd->id)
-                    ->update([
-                'status' => 1,
-                'order_refund_id' => $refundrequest->id,
-                'refund_transaction_id' => $refundedSale->id,
-                'txn_fee' => $refundedSale->refund_from_transaction_fee['value'],
-                'refunded_amt' => $refundedSale->total_refunded_amount['value'],
-                'updated_at'  => \Carbon\Carbon::now()->toDateTimeString(),
+                ->update([
+                    'status' => 1,
+                    'order_refund_id' => $refundrequest->id,
+                    'refund_transaction_id' => $refundedSale->id,
+                    'txn_fee' => $refundedSale->refund_from_transaction_fee['value'],
+                    'refunded_amt' => $refundedSale->total_refunded_amount['value'],
+                    'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
 
-            ]);
+                ]);
 
             return redirect('refundorder')->with('success', trans('flash.RefundSuccessful'));
 
-        }
-        catch (\Exception $ex) {
+        } catch (\Exception $ex) {
 
             return $ex->getData();
 
         }
 
     }
-
 
 
     public function refundwithStripe($request, $refnd)
@@ -151,33 +133,30 @@ class RefundController extends Controller
 
         $charge_id = $refnd->order->transaction_id;
         $amount = $refnd->total_amount;
-        
 
-        try
-        {
+
+        try {
             $striperefund = $stripe->refunds()
                 ->create($charge_id, $amount, [
                     'metadata' => [
                         'reason' => $refnd->reason,
                     ],
-                ]); 
+                ]);
 
             RefundCourse::where('id', $refnd->id)
-                    ->update([
-                'status' => 1,
-                'order_refund_id' => $refundrequest->id,
-                'refund_transaction_id' => $striperefund['id'],
-                'txn_fee' => null,
-                'refunded_amt' => $order_refund->amount,
-                'updated_at'  => \Carbon\Carbon::now()->toDateTimeString(),
+                ->update([
+                    'status' => 1,
+                    'order_refund_id' => $refundrequest->id,
+                    'refund_transaction_id' => $striperefund['id'],
+                    'txn_fee' => null,
+                    'refunded_amt' => $order_refund->amount,
+                    'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
 
-            ]);
+                ]);
 
             return redirect('refundorder')->with('success', trans('flash.RefundSuccessful'));
 
-        }
-        catch(\Exception $e)
-        {
+        } catch (\Exception $e) {
             $error = $e->getMessage();
 
             return redirect('admin/refunds')->with('delete', $error);
@@ -227,20 +206,20 @@ class RefundController extends Controller
         } else {
 
             RefundCourse::where('id', $refnd->id)
-                    ->update([
-                'status' => 1,
-                'order_refund_id' => $refundrequest->id,
-                'refund_transaction_id' => $result['data']['transaction']['id'],
-                'txn_fee' => null,
-                'refunded_amt' => $result['data']['transaction']['id'],
-                'updated_at'  => \Carbon\Carbon::now()->toDateTimeString(),
+                ->update([
+                    'status' => 1,
+                    'order_refund_id' => $refundrequest->id,
+                    'refund_transaction_id' => $result['data']['transaction']['id'],
+                    'txn_fee' => null,
+                    'refunded_amt' => $result['data']['transaction']['id'],
+                    'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
 
-            ]);
+                ]);
 
             return redirect('refundorder')->with('success', trans('flash.RefundSuccessful'));
 
         }
-        
+
     }
 
     public function refundwithInstamojo($request, $refnd)
@@ -283,18 +262,17 @@ class RefundController extends Controller
 
                 RefundCourse::where('id', $refnd->id)
                     ->update([
-                    'status' => 1,
-                    'order_refund_id' => $refundrequest->id,
-                    'refund_transaction_id' => $result['refund']['id'],
-                    'txn_fee' => null,
-                    'refunded_amt' => $result['refund']['refund_amount'],
-                    'updated_at'  => \Carbon\Carbon::now()->toDateTimeString(),
+                        'status' => 1,
+                        'order_refund_id' => $refundrequest->id,
+                        'refund_transaction_id' => $result['refund']['id'],
+                        'txn_fee' => null,
+                        'refunded_amt' => $result['refund']['refund_amount'],
+                        'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
 
-                ]);
+                    ]);
 
                 return redirect('refundorder')->with('success', trans('flash.RefundSuccessful'));
 
-                
 
             } else {
                 return redirect('admin/refunds')->with('delete', 'Return already completed');
@@ -305,7 +283,7 @@ class RefundController extends Controller
 
             return redirect('admin/refunds')->with('delete', $error);
         }
-        
+
     }
 
     public function refundwithPaytm($request, $refnd)
@@ -325,26 +303,26 @@ class RefundController extends Controller
         $refund->initiate();
         $response = $refund->response();
 
-        if($refund->isSuccessful()) {
+        if ($refund->isSuccessful()) {
 
 
             RefundCourse::where('id', $refnd->id)
                 ->update([
-                'status' => 1,
-                'order_refund_id' => $refundrequest->id,
-                'refund_transaction_id' => $response['REFUNDID'],
-                'txn_fee' => null,
-                'refunded_amt' => $response['REFUNDAMOUNT'],
-                'updated_at'  => \Carbon\Carbon::now()->toDateTimeString(),
+                    'status' => 1,
+                    'order_refund_id' => $refundrequest->id,
+                    'refund_transaction_id' => $response['REFUNDID'],
+                    'txn_fee' => null,
+                    'refunded_amt' => $response['REFUNDAMOUNT'],
+                    'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
 
-            ]);
+                ]);
 
             return redirect('refundorder')->with('success', trans('flash.RefundSuccessful'));
-            
 
-        } else($refund->isFailed()) {
 
-            if($response['STATUS'] == 'TXN_FAILURE') {
+        } else($refund->isFailed()){
+
+            if ($response['STATUS'] == 'TXN_FAILURE') {
 
                 $status = 0;
 
@@ -355,7 +333,7 @@ class RefundController extends Controller
             return redirect('admin/refunds')->with('delete', trans('flash.RefundError'));
 
         }
-        
+
     }
 
     public function refundwithRazorPay($request, $refnd)
@@ -371,25 +349,24 @@ class RefundController extends Controller
 
             RefundCourse::where('id', $refnd->id)
                 ->update([
-                'status' => 1,
-                'order_refund_id' => $refundrequest->id,
-                'refund_transaction_id' => $result->id,
-                'txn_fee' => null,
-                'refunded_amt' => $result->amount / 100,
-                'updated_at'  => \Carbon\Carbon::now()->toDateTimeString(),
+                    'status' => 1,
+                    'order_refund_id' => $refundrequest->id,
+                    'refund_transaction_id' => $result->id,
+                    'txn_fee' => null,
+                    'refunded_amt' => $result->amount / 100,
+                    'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
 
-            ]);
+                ]);
 
             return redirect('refundorder')->with('success', trans('flash.RefundSuccessful'));
 
-            
 
         } catch (\Exception $e) {
             $error = $e->getMessage();
 
             return redirect('admin/refunds')->with('delete', $error);
         }
-        
+
     }
 
     public function refundwithBank($request, $refnd)
@@ -399,16 +376,16 @@ class RefundController extends Controller
 
         RefundCourse::where('id', $refnd->id)
             ->update([
-            'status' => 1,
-            'order_refund_id' => $refundrequest->id,
-            'refund_transaction_id' => str_random(32),
-            'txn_fee' => null,
-            'refunded_amt' => $refundrequest->total_amount,
-            'updated_at'  => \Carbon\Carbon::now()->toDateTimeString(),
+                'status' => 1,
+                'order_refund_id' => $refundrequest->id,
+                'refund_transaction_id' => str_random(32),
+                'txn_fee' => null,
+                'refunded_amt' => $refundrequest->total_amount,
+                'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
 
-        ]);
+            ]);
 
         return redirect('refundorder')->with('success', trans('flash.RefundSuccessful'));
-        
+
     }
 }

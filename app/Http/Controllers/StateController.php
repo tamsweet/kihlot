@@ -21,7 +21,7 @@ class StateController extends Controller
     {
         $country = Country::all();
         $states = State::all();
-        return view('admin.country.state.index',compact('states', 'country'));
+        return view('admin.country.state.index', compact('states', 'country'));
     }
 
     /**
@@ -30,62 +30,58 @@ class StateController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function create()
-    {   
+    {
         $country = Country::all();
-        return view("admin.country.state.add",compact('country'));
+        return view("admin.country.state.add", compact('country'));
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
 
 
+        $data = Country::where('id', $request->country_id)->first();
 
-      $data = Country::where('id', $request->country_id)->first();
+        $allstates = Allstate::where('country_id', $data->country_id)->get();
 
-      $allstates = Allstate::where('country_id', $data->country_id)->get();
+        //add if state is not added
+        $states = State::where('country_id', $data->country_id)->first();
 
-      //add if state is not added
-      $states = State::where('country_id', $data->country_id)->first();
+        if ($states == NULL) {
 
-        if($states == NULL){
+            foreach ($allstates as $state) {
 
-          foreach($allstates as $state)
-          { 
+                DB::table('states')->insert(
+                    array(
+                        'state_id' => $state->id,
+                        'name' => $state->name,
+                        'country_id' => $state->country_id,
+                    )
+                );
+            }
 
-            DB::table('states')->insert(
-                  array(
-                      'state_id'  => $state->id,
-                      'name'      => $state->name,
-                      'country_id'=> $state->country_id,
-                  )
-              );
-          }
+            session()->flash('success', trans('flash.AddedSuccessfully'));
 
-          session()->flash('success', trans('flash.AddedSuccessfully'));
+        } else {
 
-        }
-        else{
-
-            session()->flash('delete',trans('flash.AlreadyExist'));
+            session()->flash('delete', trans('flash.AlreadyExist'));
         }
 
 
-      
         return redirect('admin/state');
 
-     
+
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\State  $state
+     * @param \App\State $state
      * @return \Illuminate\Http\Response
      */
     public function show(State $state)
@@ -96,52 +92,52 @@ class StateController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\State  $state
+     * @param \App\State $state
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
-      $states = State::findorfail($id);
-      return view('admin.country.state.edit')->withStates($states);
+        $states = State::findorfail($id);
+        return view('admin.country.state.edit')->withStates($states);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\State  $state
+     * @param \Illuminate\Http\Request $request
+     * @param \App\State $state
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
 
-      $this->validate($request, array(
+        $this->validate($request, array(
 
-        's_name' => 'required:states,state'
+            's_name' => 'required:states,state'
 
-      ));
+        ));
 
-      $state = State::findorfail($id);
+        $state = State::findorfail($id);
 
-      $state->state = $request->s_name;
-      $state->save();
+        $state->state = $request->s_name;
+        $state->save();
 
-      Session::flash('success', trans('flash.UpdatedSuccessfully'));
-      return redirect()->route('state.index');
+        Session::flash('success', trans('flash.UpdatedSuccessfully'));
+        return redirect()->route('state.index');
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\State  $state
+     * @param \App\State $state
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-      $state = State::find($id);
-      $state->delete();
-      Session::flash('success', trans('flash.DeletedSuccessfully'));
-      return redirect('admin/state');
+        $state = State::find($id);
+        $state->delete();
+        Session::flash('success', trans('flash.DeletedSuccessfully'));
+        return redirect('admin/state');
     }
 
     public function addstate(Request $request)
@@ -155,23 +151,23 @@ class StateController extends Controller
         ]);
 
         $created_state = Allstate::create([
-            'name' => $request->name,
-            'country_id'=> $country->country_id,
+                'name' => $request->name,
+                'country_id' => $country->country_id,
             ]
         );
-           
-        if($created_state){
-          DB::table('states')->insert(
+
+        if ($created_state) {
+            DB::table('states')->insert(
                 array(
                     'name' => $request->name,
-                    'state_id'=> $created_state->id,
-                    'country_id'=> $created_state->country_id,
+                    'state_id' => $created_state->id,
+                    'country_id' => $created_state->country_id,
                 )
             );
         }
 
         Session::flash('success', trans('flash.AddedSuccessfully'));
-        
+
         return redirect('admin/state');
     }
 }

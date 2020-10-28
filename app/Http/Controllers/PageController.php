@@ -18,7 +18,7 @@ class PageController extends Controller
     public function index()
     {
         $page = Page::all();
-        return view('admin.pages.index',compact('page'));
+        return view('admin.pages.index', compact('page'));
     }
 
     /**
@@ -34,20 +34,20 @@ class PageController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        $this -> validate($request,[
-            'title'=>'required',
-            'details'=>'required',
-            'status'=>'required',
+        $this->validate($request, [
+            'title' => 'required',
+            'details' => 'required',
+            'status' => 'required',
         ]);
 
         $input = $request->all();
 
-        $slug = str_slug($input['title'],'-');
+        $slug = str_slug($input['title'], '-');
         $input['slug'] = $slug;
         $data = Page::create($input);
         $data->save();
@@ -59,7 +59,7 @@ class PageController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\page  $page
+     * @param \App\page $page
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -70,53 +70,53 @@ class PageController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\page  $page
+     * @param \App\page $page
      * @return \Illuminate\Http\Response
      */
-    public function edit( $id)
+    public function edit($id)
     {
-        $find= Page::find($id);
+        $find = Page::find($id);
         return view('admin.pages.page_edit', compact('find'));
-      
+
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\page  $page
+     * @param \Illuminate\Http\Request $request
+     * @param \App\page $page
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request,$id)
+    public function update(Request $request, $id)
     {
-        $this -> validate($request,[
-            'title'=>'required',
-            'details'=>'required',
-            'status'=>'required',
+        $this->validate($request, [
+            'title' => 'required',
+            'details' => 'required',
+            'status' => 'required',
         ]);
 
         $data = Page::findorfail($id);
         $input = $request->all();
 
-        $slug = str_slug($input['title'],'-');
+        $slug = str_slug($input['title'], '-');
         $input['slug'] = $slug;
 
-        
+
         $data->update($input);
         Session::flash('success', trans('flash.UpdatedSuccessfully'));
-        return redirect('page'); 
+        return redirect('page');
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\page  $page
+     * @param \App\page $page
      * @return \Illuminate\Http\Response
      */
-    public function destroy( $id)
+    public function destroy($id)
     {
-        
-        DB::table('pages')->where('id',$id)->delete();
+
+        DB::table('pages')->where('id', $id)->delete();
         return redirect('page');
     }
 
@@ -124,7 +124,7 @@ class PageController extends Controller
     public function showpage($slug)
     {
         $page = Page::where('slug', '=', $slug)->first();
-        
-        return view('page',compact('page'));
+
+        return view('page', compact('page'));
     }
 }

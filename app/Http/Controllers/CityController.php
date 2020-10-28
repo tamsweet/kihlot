@@ -24,7 +24,7 @@ class CityController extends Controller
         $cities = City::all();
         $states = State::all();
         $countries = Country::all();
-        return view('admin.country.state.city.index',compact('cities','states','countries'));
+        return view('admin.country.state.city.index', compact('cities', 'states', 'countries'));
     }
 
     /**
@@ -37,17 +37,17 @@ class CityController extends Controller
 
         $countries = Country::all();
         $states = State::all();
-        return view("admin.country.state.city.add",compact('states', 'countries'));
+        return view("admin.country.state.city.add", compact('states', 'countries'));
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-     public function store(Request $request)
-     {
+    public function store(Request $request)
+    {
 
         $data = State::where('state_id', $request->state_id)->first();
 
@@ -55,42 +55,39 @@ class CityController extends Controller
 
         $cities = City::where('state_id', $data->state_id)->first();
 
-        if(count($allcities)>0){
+        if (count($allcities) > 0) {
 
-            if($cities == NULL){
+            if ($cities == NULL) {
 
-                foreach($allcities as $city)
-                { 
+                foreach ($allcities as $city) {
 
-                  DB::table('cities')->insert(
+                    DB::table('cities')->insert(
                         array(
-                            'name'      => $city->name,
-                            'state_id'=> $city->state_id,
-                            'country_id'=> $data->country_id,
+                            'name' => $city->name,
+                            'state_id' => $city->state_id,
+                            'country_id' => $data->country_id,
                         )
                     );
 
                 }
 
-                Session::flash('success',trans('flash.AddedSuccessfully'));
+                Session::flash('success', trans('flash.AddedSuccessfully'));
 
+            } else {
+                Session::flash('delete', trans('flash.AlreadyExist'));
             }
-            else{
-               Session::flash('delete',trans('flash.AlreadyExist')); 
-            }
-        }
-        else{
+        } else {
 
-            Session::flash('delete',trans('flash.NoCitiesAvailable')); 
+            Session::flash('delete', trans('flash.NoCitiesAvailable'));
         }
-        
+
         return redirect('admin/city');
-     }
+    }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\City  $city
+     * @param \App\City $city
      * @return \Illuminate\Http\Response
      */
     public function show(City $city)
@@ -101,52 +98,52 @@ class CityController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\City  $city
+     * @param \App\City $city
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
-      $cities = City::findorfail($id);
-      return view('admin.country.state.city.edit')->withCities($cities);
+        $cities = City::findorfail($id);
+        return view('admin.country.state.city.edit')->withCities($cities);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\City  $city
+     * @param \Illuminate\Http\Request $request
+     * @param \App\City $city
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
-      $this->validate($request, array(
+        $this->validate($request, array(
 
-        'c_name' => 'required:cities,city',
-        'status' => 'required|int'
+            'c_name' => 'required:cities,city',
+            'status' => 'required|int'
 
-      ));
+        ));
 
-      $city = City::findorfail($id);
-      $city->status = $request->status;
-      $city->city = $request->c_name;
-      $city->save();
+        $city = City::findorfail($id);
+        $city->status = $request->status;
+        $city->city = $request->c_name;
+        $city->save();
 
-      Session::flash('success',trans('flash.UpdatedSuccessfully'));
-      return redirect()->route('city.index');
+        Session::flash('success', trans('flash.UpdatedSuccessfully'));
+        return redirect()->route('city.index');
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\City  $city
+     * @param \App\City $city
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-      $city = City::find($id);
-      $city->delete();
-      Session::flash('success',trans('flash.DeletedSuccessfully'));
-      return redirect('admin/city');
+        $city = City::find($id);
+        $city->delete();
+        Session::flash('success', trans('flash.DeletedSuccessfully'));
+        return redirect('admin/city');
     }
 
     public function addcity(Request $request)
@@ -157,22 +154,22 @@ class CityController extends Controller
             'state_id' => 'required',
 
         ));
-        
+
         $data = State::where('state_id', $request->state_id)->first();
-           
 
-          DB::table('cities')->insert(
-                array(
-                    'name'      => $request->name,
-                    'state_id'=> $data->state_id,
-                    'country_id'=> $data->country_id,
-                )
-            );
-        
 
-        Session::flash('success',trans('flash.AddedSuccessfully'));
-      
-        
+        DB::table('cities')->insert(
+            array(
+                'name' => $request->name,
+                'state_id' => $data->state_id,
+                'country_id' => $data->country_id,
+            )
+        );
+
+
+        Session::flash('success', trans('flash.AddedSuccessfully'));
+
+
         return redirect('admin/city');
     }
 }

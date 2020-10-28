@@ -12,110 +12,96 @@ class AdsController extends Controller
 {
     public function getAds()
     {
-    	return view('advertise.index');
+        return view('advertise.index');
     }
 
     public function create()
     {
-      return view('advertise.create');
+        return view('advertise.create');
     }
 
     public function showEdit($id)
     {
-      $ad = Ads::findorfail($id);
-      return view('advertise.edit',compact('ad'));
+        $ad = Ads::findorfail($id);
+        return view('advertise.edit', compact('ad'));
     }
 
     public function store(Request $request)
     {
-    	$newad = new Ads;
-        
-        if($request->ad_location == "skip")
-        {
+        $newad = new Ads;
+
+        if ($request->ad_location == "skip") {
             $newad->ad_type = "video";
-        }else
-        {
+        } else {
             $newad->ad_type = "image";
         }
-    	
-    	  $newad->ad_location = $request->ad_location;
+
+        $newad->ad_location = $request->ad_location;
         $newad->ad_target = $request->ad_target;
-        
-       
-       
-    	
-    	if($request->ad_location == "popup" || $request->ad_location == "onpause")
-    	{
-
-    	if ($file = $request->file('ad_image'))
-         {
-
-          $request->validate([
-          'ad_image' => 'image:png,jpg,jpeg | max:3500'
-        ]);
-
-		  $name = time().$file->getClientOriginalName();
-          $file->move('adv_upload/image', $name);
-          $newad->ad_image = $name;
-          $newad->ad_video = "no";
-
-          if($request->ad_location == "popup")
-          {
-             $newad->time = $request->time;
-             $newad->endtime = $request->endtime;
-          }else
-          {
-             $newad->time = "00:00:00";
-             $newad->endtime = "00:00:00";
-          }
-         
-         
-         }
-
-    	}
-
-    	if($request->ad_location == "skip")
-    	{
-
-        if($request->checkType == "upload")
-        {
 
 
-    		
-    	if ($file = $request->file('ad_video'))
-         {
+        if ($request->ad_location == "popup" || $request->ad_location == "onpause") {
 
-    		$request->validate([
-        'ad_video' => 'mimes:mp4,mov,ogg | max:10000',
-        'ad_hold' => 'int'
-        ],[
-          'ad.hold' => 'Ad Hold time must be in valid format'
-        ]);
-		  $name = time().$file->getClientOriginalName();
-          $file->move('adv_upload/video', $name);
-          $newad->ad_video = $name;
-          $newad->ad_image = "no";
-          $newad->ad_hold = $request->ad_hold;
-          $newad->time = $request->time;
-          $newad->endtime = null;
-         }
+            if ($file = $request->file('ad_image')) {
+
+                $request->validate([
+                    'ad_image' => 'image:png,jpg,jpeg | max:3500'
+                ]);
+
+                $name = time() . $file->getClientOriginalName();
+                $file->move('adv_upload/image', $name);
+                $newad->ad_image = $name;
+                $newad->ad_video = "no";
+
+                if ($request->ad_location == "popup") {
+                    $newad->time = $request->time;
+                    $newad->endtime = $request->endtime;
+                } else {
+                    $newad->time = "00:00:00";
+                    $newad->endtime = "00:00:00";
+                }
+
+
+            }
 
         }
-        elseif($request->checkType == "url")
-        {
-          $newad->ad_video = "no";
-          $newad->ad_image = "no";
-          $newad->ad_url = $request->ad_url;
-          $newad->ad_hold = $request->ad_hold;
-          $newad->time = $request->time;
-          $newad->endtime = null;
+
+        if ($request->ad_location == "skip") {
+
+            if ($request->checkType == "upload") {
+
+
+                if ($file = $request->file('ad_video')) {
+
+                    $request->validate([
+                        'ad_video' => 'mimes:mp4,mov,ogg | max:10000',
+                        'ad_hold' => 'int'
+                    ], [
+                        'ad.hold' => 'Ad Hold time must be in valid format'
+                    ]);
+                    $name = time() . $file->getClientOriginalName();
+                    $file->move('adv_upload/video', $name);
+                    $newad->ad_video = $name;
+                    $newad->ad_image = "no";
+                    $newad->ad_hold = $request->ad_hold;
+                    $newad->time = $request->time;
+                    $newad->endtime = null;
+                }
+
+            } elseif ($request->checkType == "url") {
+                $newad->ad_video = "no";
+                $newad->ad_image = "no";
+                $newad->ad_url = $request->ad_url;
+                $newad->ad_hold = $request->ad_hold;
+                $newad->time = $request->time;
+                $newad->endtime = null;
+            }
+
         }
 
-    	}
 
-
-    	$newad->save();
-    	return back()->with('success', trans('flash.CreatedSuccessfully'));
+        $newad->save();
+        return back()->with('success', trans('flash.CreatedSuccessfully'));
 
 
     }
@@ -127,104 +113,90 @@ class AdsController extends Controller
 
     function updateAd(Request $request)
     {
-        if($request->timer_check == "no")
-        {
-            $ad = DB::table('ads')->where('ad_type','video')->update(array('time' => '00:00:00'));
-        }
-        elseif($request->timer_check == "yes")
-        {
-            if($request->ad_timer !="")
-            {
-              $ad = DB::table('ads')->where('ad_type','video')->update(array('time' => $request->ad_timer));
+        if ($request->timer_check == "no") {
+            $ad = DB::table('ads')->where('ad_type', 'video')->update(array('time' => '00:00:00'));
+        } elseif ($request->timer_check == "yes") {
+            if ($request->ad_timer != "") {
+                $ad = DB::table('ads')->where('ad_type', 'video')->update(array('time' => $request->ad_timer));
             }
-            
+
         }
 
-         if($request->ad_hold !="")
-         {
-          $request->validate([
-            'ad_hold' => 'int'
-          ],
-            ['ad.hold' => 'Invalid format']
-          );
+        if ($request->ad_hold != "") {
+            $request->validate([
+                'ad_hold' => 'int'
+            ],
+                ['ad.hold' => 'Invalid format']
+            );
 
-          $ad = DB::table('ads')->where('ad_type','video')->update(array('ad_hold' => $request->ad_hold));
-         }
-        
+            $ad = DB::table('ads')->where('ad_type', 'video')->update(array('ad_hold' => $request->ad_hold));
+        }
 
-        return back()->with('success','Ad Settings Upated');
+
+        return back()->with('success', 'Ad Settings Upated');
     }
 
     function updatePopAd(Request $request)
     {
-      if($request->time !="")
-      {
-      $ad2 = DB::table('ads')->where('ad_location','popup')->update(array('time' => $request->time));
-      }
+        if ($request->time != "") {
+            $ad2 = DB::table('ads')->where('ad_location', 'popup')->update(array('time' => $request->time));
+        }
 
-      if($request->endtime !="")
-      {
-        $ad = DB::table('ads')->where('ad_location','popup')->update(array('endtime' => $request->endtime));
-      }
-      
+        if ($request->endtime != "") {
+            $ad = DB::table('ads')->where('ad_location', 'popup')->update(array('endtime' => $request->endtime));
+        }
 
-      return back()->with('success',trans('flash.UpdatedSuccessfully'));
+
+        return back()->with('success', trans('flash.UpdatedSuccessfully'));
     }
 
     function delete($id)
     {
-      $ad = Ads::findorfail($id);
-      
-      if($ad->ad_type == "image")
-      {
-        unlink('adv_upload/image/'.$ad->ad_image);
-        $ad->delete();
-      }
-      elseif($ad->ad_type == "video")
-      {
-         if($ad->ad_video !="no")
-        {
-          unlink('adv_upload/video/'.$ad->ad_video);
-          $ad->delete();
+        $ad = Ads::findorfail($id);
+
+        if ($ad->ad_type == "image") {
+            unlink('adv_upload/image/' . $ad->ad_image);
+            $ad->delete();
+        } elseif ($ad->ad_type == "video") {
+            if ($ad->ad_video != "no") {
+                unlink('adv_upload/video/' . $ad->ad_video);
+                $ad->delete();
+            } else {
+                $ad->delete();
+            }
         }
-        else
-        {
-          $ad->delete();
-        }
-      }
-     
-      
+
+
         return back()->with('delete', trans('flash.DeletedSuccessfully'));
     }
 
     function updateADSOLO(Request $request, $id)
     {
 
-      $request->validate([
-        'ad_image' => 'image:png,jpg,jpeg | max:3500'
-      ]);
+        $request->validate([
+            'ad_image' => 'image:png,jpg,jpeg | max:3500'
+        ]);
 
-      $ad = Ads::findorfail($id);
+        $ad = Ads::findorfail($id);
 
-      $ad->ad_target = $request->ad_target;
+        $ad->ad_target = $request->ad_target;
 
-      if ($file = $request->file('ad_image'))
-         {
+        if ($file = $request->file('ad_image')) {
 
-          unlink('adv_upload/image/'.$ad->ad_image);
+            unlink('adv_upload/image/' . $ad->ad_image);
 
-          $name = time().$file->getClientOriginalName();
+            $name = time() . $file->getClientOriginalName();
 
-          $file->move('adv_upload/image', $name);
-          
-          $ad->ad_image = $name;
-      
+            $file->move('adv_upload/image', $name);
 
-          }
+            $ad->ad_image = $name;
 
-          $ad->save();
 
-          return redirect()->route('ads')->with('success', trans('flash.UpdatedSuccessfully'));
+        }
+
+        $ad->save();
+
+        return redirect()->route('ads')->with('success', trans('flash.UpdatedSuccessfully'));
 
 
     }
@@ -232,36 +204,34 @@ class AdsController extends Controller
     function updateVideoAD(Request $request, $id)
     {
 
-      $request->validate([
-        'ad_video' => 'mimes:mp4,mov,ogg | max:10000'
-      ]);
+        $request->validate([
+            'ad_video' => 'mimes:mp4,mov,ogg | max:10000'
+        ]);
 
-      $ad = Ads::findorfail($id);
+        $ad = Ads::findorfail($id);
 
-      $ad->ad_target = $request->ad_target;
+        $ad->ad_target = $request->ad_target;
 
-      if($ad->ad_video == "no")
-      {
-        $ad->ad_url = $request->ad_url;
-      }
+        if ($ad->ad_video == "no") {
+            $ad->ad_url = $request->ad_url;
+        }
 
-       if ($file = $request->file('ad_video'))
-         {
+        if ($file = $request->file('ad_video')) {
 
-          unlink('adv_upload/video/'.$ad->ad_video);
+            unlink('adv_upload/video/' . $ad->ad_video);
 
-          $name = time().$file->getClientOriginalName();
+            $name = time() . $file->getClientOriginalName();
 
-          $file->move('adv_upload/video', $name);
-          
-          $ad->ad_video = $name;
-      
+            $file->move('adv_upload/video', $name);
 
-          }
+            $ad->ad_video = $name;
 
-          $ad->save();
 
-          return redirect()->route('ads')->with('success', trans('flash.UpdatedSuccessfully'));
+        }
+
+        $ad->save();
+
+        return redirect()->route('ads')->with('success', trans('flash.UpdatedSuccessfully'));
 
     }
 
@@ -282,14 +252,12 @@ class AdsController extends Controller
 
             $ads::destroy($checked);
 
-            if($ads->ad_type == "image" && $ads->ad_video =="no")
-            {
-              unlink('adv_upload/image/'.$ads->ad_image);
+            if ($ads->ad_type == "image" && $ads->ad_video == "no") {
+                unlink('adv_upload/image/' . $ads->ad_image);
             }
 
-            if($ads->ad_type == "video" && $ads->ad_image =="no" && $ads->ad_url == "")
-            {
-              unlink('adv_upload/video/'.$ads->ad_video);
+            if ($ads->ad_type == "video" && $ads->ad_image == "no" && $ads->ad_url == "") {
+                unlink('adv_upload/video/' . $ads->ad_video);
             }
 
 

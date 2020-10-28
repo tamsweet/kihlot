@@ -19,7 +19,7 @@ class QuizTopicController extends Controller
     public function index()
     {
         $topics = QuizTopic::all();
-        return view('admin.course.quiztopic.index',compact('topics'));
+        return view('admin.course.quiztopic.index', compact('topics'));
     }
 
     /**
@@ -35,7 +35,7 @@ class QuizTopicController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -44,126 +44,125 @@ class QuizTopicController extends Controller
         $input = $request->all();
 
         $request->validate([
-          'title' => 'required|string',
-          'per_q_mark' => 'required',
-          
+            'title' => 'required|string',
+            'per_q_mark' => 'required',
+
         ]);
 
-        if(isset($request->quiz_price)){
-          $request->validate([
-            'amount' => 'required'
-          ]);
+        if (isset($request->quiz_price)) {
+            $request->validate([
+                'amount' => 'required'
+            ]);
         }
 
-        if(isset($request->quiz_price)){
-          $input['amount'] = $request->amount;
-        }else{
-          $input['amount'] = null;
+        if (isset($request->quiz_price)) {
+            $input['amount'] = $request->amount;
+        } else {
+            $input['amount'] = null;
         }
 
-        if(isset($request->show_ans)){
-          $input['show_ans'] = "1";
-        }else{
-          $input['show_ans'] = "0";
+        if (isset($request->show_ans)) {
+            $input['show_ans'] = "1";
+        } else {
+            $input['show_ans'] = "0";
         }
 
-        if(isset($request->status)){
-          $input['status'] = "1";
-        }else{
-          $input['status'] = "0";
+        if (isset($request->status)) {
+            $input['status'] = "1";
+        } else {
+            $input['status'] = "0";
         }
 
-        if(isset($request->quiz_again)){
-          $input['quiz_again'] = "1";
-        }else{
-          $input['quiz_again'] = "0";
+        if (isset($request->quiz_again)) {
+            $input['quiz_again'] = "1";
+        } else {
+            $input['quiz_again'] = "0";
         }
 
-       
+
         $quiz = QuizTopic::create($input);
-           
-      
+
+
         return back()->with('success', 'Topic has been added');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\QuizTopic  $quizTopic
+     * @param \App\QuizTopic $quizTopic
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
         $topic = QuizTopic::where('id', $id)->first();
-        return view('admin.course.quiztopic.edit',compact('topic'));
+        return view('admin.course.quiztopic.edit', compact('topic'));
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\QuizTopic  $quizTopic
+     * @param \App\QuizTopic $quizTopic
      * @return \Illuminate\Http\Response
      */
     public function edit(QuizTopic $quizTopic)
     {
-        
+
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\QuizTopic  $quizTopic
+     * @param \Illuminate\Http\Request $request
+     * @param \App\QuizTopic $quizTopic
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
         $request->validate([
 
-          'title' => 'required|string',
-          'per_q_mark' => 'required'
-          
+            'title' => 'required|string',
+            'per_q_mark' => 'required'
+
         ]);
 
-        if(isset($request->pricechk)){
-          $request->validate([
-            'amount' => 'required'
-          ]);
+        if (isset($request->pricechk)) {
+            $request->validate([
+                'amount' => 'required'
+            ]);
         }
 
-          $topic = QuizTopic::findOrFail($id);
-          
-          $topic->title = $request->title;
-          $topic->description = $request->description;
-          $topic->per_q_mark = $request->per_q_mark;
-          $topic->timer = $request->timer;
-          $topic->due_days = $request->due_days;
+        $topic = QuizTopic::findOrFail($id);
 
-         
+        $topic->title = $request->title;
+        $topic->description = $request->description;
+        $topic->per_q_mark = $request->per_q_mark;
+        $topic->timer = $request->timer;
+        $topic->due_days = $request->due_days;
 
-          if(isset($request->status)){
+
+        if (isset($request->status)) {
             $topic['status'] = "1";
-          }else{
+        } else {
             $topic['status'] = "0";
-          }
+        }
 
-          if(isset($request->quiz_again)){
+        if (isset($request->quiz_again)) {
             $topic['quiz_again'] = "1";
-          }else{
+        } else {
             $topic['quiz_again'] = "0";
-          }
-         
-
-          $topic->save();
+        }
 
 
-          return redirect()->route('course.show',$topic->course_id);
+        $topic->save();
+
+
+        return redirect()->route('course.show', $topic->course_id);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\QuizTopic  $quizTopic
+     * @param \App\QuizTopic $quizTopic
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
@@ -174,7 +173,7 @@ class QuizTopicController extends Controller
 
         Quiz::where('topic_id', $id)->delete();
         QuizAnswer::where('topic_id', $id)->delete();
-        
+
         return back()->with('delete', trans('flash.DeletedSuccessfully'));
     }
 
@@ -183,11 +182,10 @@ class QuizTopicController extends Controller
         $topic = QuizTopic::where('id', $id)->first();
         $answer = QuizAnswer::where('topic_id', $id)->get();
 
-        if($answer != NULL)
-        {
-          QuizAnswer::where('topic_id', $id)->delete();
+        if ($answer != NULL) {
+            QuizAnswer::where('topic_id', $id)->delete();
         }
-        return redirect()->route('course.show',$topic->course_id);
+        return redirect()->route('course.show', $topic->course_id);
     }
 
 
@@ -202,17 +200,17 @@ class QuizTopicController extends Controller
 
         $filtStudents = collect();
         foreach ($students as $student) {
-          foreach ($ans as $answer) {
-            if ($answer->user_id == $student->id) {
-               $filtStudents->push($student);
+            foreach ($ans as $answer) {
+                if ($answer->user_id == $student->id) {
+                    $filtStudents->push($student);
+                }
             }
-          }
         }
 
         $filtStudents = $filtStudents->unique();
         $filtStudents = $filtStudents->flatten();
 
         return view('admin.course.quiztopic.report', compact('filtStudents', 'ans', 'c_que', 'topics'));
-      
+
     }
 }

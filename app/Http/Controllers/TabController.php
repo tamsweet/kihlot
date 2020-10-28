@@ -7,8 +7,9 @@ use App\Categories;
 
 class TabController extends Controller
 {
-    public function show($id){
-    	$cate = $id;
-    	return view('tabs',compact('cate'));
+    public function show($id)
+    {
+        $cate = $id;
+        return view('tabs', compact('cate'));
     }
 }

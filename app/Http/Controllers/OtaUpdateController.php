@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Config;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
-Use Alert;
-Use Session;
+use Alert;
+use Session;
 
 class OtaUpdateController extends Controller
 {
@@ -37,9 +37,8 @@ class OtaUpdateController extends Controller
 
 
         Alert::success('Updated to ' . config('app.version'), 'Your App Updated Successfully !')->persistent('Close')->autoclose(8000);;
-        
 
-        
+
         return redirect('/');
 
     }
@@ -61,7 +60,7 @@ class OtaUpdateController extends Controller
                 $env = preg_split('/\s+/', $env);
 
                 // Loop through given data
-                foreach ((array) $data as $key => $value) {
+                foreach ((array)$data as $key => $value) {
                     // Loop through .env-data
                     foreach ($env as $env_key => $env_value) {
                         // Turn the value into an array and stop after the first split

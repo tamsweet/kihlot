@@ -7,7 +7,7 @@ use Spatie\Translatable\HasTranslations;
 
 class GetStarted extends Model
 {
-	use HasTranslations;
+    use HasTranslations;
 
     public $translatable = ['title', 'details'];
 
@@ -18,16 +18,16 @@ class GetStarted extends Model
      */
     public function toArray()
     {
-      $attributes = parent::toArray();
-      
-      foreach ($this->getTranslatableAttributes() as $name) {
-          $attributes[$name] = $this->getTranslation($name, app()->getLocale());
-      }
-      
-      return $attributes;
-    } 
+        $attributes = parent::toArray();
+
+        foreach ($this->getTranslatableAttributes() as $name) {
+            $attributes[$name] = $this->getTranslation($name, app()->getLocale());
+        }
+
+        return $attributes;
+    }
 
     protected $table = 'get_starteds';
 
-    protected $fillable = [ 'heading', 'sub_heading', 'button_txt', 'image', 'link' ];
+    protected $fillable = ['heading', 'sub_heading', 'button_txt', 'image', 'link'];
 }

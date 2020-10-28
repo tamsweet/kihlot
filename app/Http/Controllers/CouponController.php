@@ -16,8 +16,8 @@ class CouponController extends Controller
      */
     public function index()
     {
-        $coupans = Coupon::orderBy('id','DESC')->get();
-        return view("admin.coupan.index",compact("coupans"));
+        $coupans = Coupon::orderBy('id', 'DESC')->get();
+        return view("admin.coupan.index", compact("coupans"));
     }
 
     /**
@@ -30,13 +30,13 @@ class CouponController extends Controller
         $category = Categories::all();
         $product = Course::all();
         $coupon_code = substr(base_convert(sha1(uniqid(mt_rand())), 16, 36), 0, 7);
-        return view("admin.coupan.add",compact('coupon_code','category','product'));
+        return view("admin.coupan.add", compact('coupon_code', 'category', 'product'));
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -45,9 +45,9 @@ class CouponController extends Controller
         $input = $request->all();
         $newc = new Coupon;
 
-        if($request->link_by == 'product'){
+        if ($request->link_by == 'product') {
             $input['minamount'] = NULL;
-        }else{
+        } else {
             $input['pro_id'] = NULL;
         }
 
@@ -56,7 +56,6 @@ class CouponController extends Controller
         return redirect("coupon")->with('success', trans('flash.CreatedSuccessfully'));
     }
 
-   
 
     public function show($id)
     {
@@ -66,7 +65,7 @@ class CouponController extends Controller
     public function edit($id)
     {
         $coupan = Coupon::findOrFail($id);
-        return view("admin.coupan.edit",compact("coupan"));
+        return view("admin.coupan.edit", compact("coupan"));
     }
 
     public function update(Request $request, $id)
@@ -74,25 +73,25 @@ class CouponController extends Controller
         $input = $request->all();
         $newc = Coupon::find($id);
 
-        if($request->link_by == 'product'){
+        if ($request->link_by == 'product') {
             $input['minamount'] = NULL;
-        }else{
+        } else {
             $input['pro_id'] = NULL;
         }
 
         $newc->update($input);
 
-        return redirect("coupon")->with('success',trans('flash.UpdatedSuccessfully'));    
+        return redirect("coupon")->with('success', trans('flash.UpdatedSuccessfully'));
     }
-   
+
     public function destroy($id)
     {
         $newc = Coupon::find($id);
-        if(isset($newc)){
+        if (isset($newc)) {
             $newc->delete();
-            return back()->with('success',trans('flash.DeletedSuccessfully'));
-        }else{
-            return back()->with('delete',trans('flash.NotFound'));
+            return back()->with('success', trans('flash.DeletedSuccessfully'));
+        } else {
+            return back()->with('delete', trans('flash.NotFound'));
         }
     }
 }

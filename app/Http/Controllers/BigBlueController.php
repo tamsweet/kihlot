@@ -18,180 +18,182 @@ use BigBlueButton\Parameters\GetRecordingsParameters;
 
 class BigBlueController extends Controller
 {
-    
 
-    public function index(){
-    	$meetings = BBL::orderBy('id','DESC')->where('is_ended','!=',1)->where('instructor_id',Auth::user()->id)->get();
-    	return view('bbl.index',compact('meetings'));
+
+    public function index()
+    {
+        $meetings = BBL::orderBy('id', 'DESC')->where('is_ended', '!=', 1)->where('instructor_id', Auth::user()->id)->get();
+        return view('bbl.index', compact('meetings'));
     }
 
-    public function create(){
-    	return view('bbl.create');
+    public function create()
+    {
+        return view('bbl.create');
     }
 
-    public function edit($meetingid){
-    	$meeting = BBL::findorfail($meetingid);
-    	return view('bbl.edit',compact('meeting'));
+    public function edit($meetingid)
+    {
+        $meeting = BBL::findorfail($meetingid);
+        return view('bbl.edit', compact('meeting'));
     }
 
-    public function store(Request $request){
-    	$newmeeting = new BBL;
-    	$input = $request->all();
+    public function store(Request $request)
+    {
+        $newmeeting = new BBL;
+        $input = $request->all();
 
-        $allmeeting = BBL::where('is_ended','!=',1)->get();
+        $allmeeting = BBL::where('is_ended', '!=', 1)->get();
 
         foreach ($allmeeting as $key => $met) {
-           if($request->meetingid == $met->meetingid){
-                return back()->with('delete','Meeting is already active with this name !')->withInput();
-           }
+            if ($request->meetingid == $met->meetingid) {
+                return back()->with('delete', 'Meeting is already active with this name !')->withInput();
+            }
         }
 
-        if($request->modpw == $request->attendeepw){
-            return back()->with('delete','Attandee password and moderator password cannot be same !')->withInput();
+        if ($request->modpw == $request->attendeepw) {
+            return back()->with('delete', 'Attandee password and moderator password cannot be same !')->withInput();
         }
 
-    	if(isset($request->setMuteOnStart)){
-    		$input['setMuteOnStart'] = 1;
-    	}else{
-    		$input['setMuteOnStart'] = 0;
-    	}
+        if (isset($request->setMuteOnStart)) {
+            $input['setMuteOnStart'] = 1;
+        } else {
+            $input['setMuteOnStart'] = 0;
+        }
 
-        if(isset($request->allow_record)){
+        if (isset($request->allow_record)) {
             $input['allow_record'] = 1;
-        }else{
+        } else {
             $input['allow_record'] = 0;
         }
 
-    	if($request->setMaxParticipants == ''){
-    		$input['setMaxParticipants'] = '-1';
-    	}
+        if ($request->setMaxParticipants == '') {
+            $input['setMaxParticipants'] = '-1';
+        }
 
-        if(isset($request->disable_chat)){
+        if (isset($request->disable_chat)) {
             $input['disable_chat'] = 1;
-        }else{
+        } else {
             $input['disable_chat'] = 0;
-        } 
+        }
 
-        if(isset($request->link_by))
-        {
+        if (isset($request->link_by)) {
             $input['link_by'] = 'course';
             $input['course_id'] = $request['course_id'];
-        }
-        else
-        {
+        } else {
             $input['link_by'] = NULL;
             $input['course_id'] = NULL;
-        }    
-
-    	$input['instructor_id']	= Auth::user()->id;	
-
-    	$newmeeting->create($input);
-
-        
-    	return redirect()->route('bbl.all.meeting')->with('success',trans('flash.CreatedSuccessfully'));
-    }
-
-    public function update(Request $request,$id){
-    	$newmeeting = BBL::findorfail($id);
-    	$input = $request->all();
-
-        if($request->modpw == $request->attendeepw){
-            return back()->with('delete','Attandee password and moderator password cannot be same !')->withInput();
         }
 
-    	if(isset($request->setMuteOnStart)){
-    		$input['setMuteOnStart'] = 1;
-    	}else{
-    		$input['setMuteOnStart'] = 0;
-    	}
+        $input['instructor_id'] = Auth::user()->id;
 
-         if(isset($request->allow_record)){
+        $newmeeting->create($input);
+
+
+        return redirect()->route('bbl.all.meeting')->with('success', trans('flash.CreatedSuccessfully'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $newmeeting = BBL::findorfail($id);
+        $input = $request->all();
+
+        if ($request->modpw == $request->attendeepw) {
+            return back()->with('delete', 'Attandee password and moderator password cannot be same !')->withInput();
+        }
+
+        if (isset($request->setMuteOnStart)) {
+            $input['setMuteOnStart'] = 1;
+        } else {
+            $input['setMuteOnStart'] = 0;
+        }
+
+        if (isset($request->allow_record)) {
             $input['allow_record'] = 1;
-        }else{
+        } else {
             $input['allow_record'] = 0;
         }
 
-    	if($request->setMaxParticipants == ''){
-    		$input['setMaxParticipants'] = '-1';
-    	}
+        if ($request->setMaxParticipants == '') {
+            $input['setMaxParticipants'] = '-1';
+        }
 
-        if(isset($request->disable_chat)){
+        if (isset($request->disable_chat)) {
             $input['disable_chat'] = 1;
-        }else{
+        } else {
             $input['disable_chat'] = 0;
         }
 
-        if(isset($request->link_by))
-        {
+        if (isset($request->link_by)) {
             $input['link_by'] = 'course';
             $input['course_id'] = $request['course_id'];
-        }
-        else
-        {
+        } else {
             $input['link_by'] = NULL;
             $input['course_id'] = NULL;
-        }   		
+        }
 
-    	$newmeeting->update($input);
-    	return redirect()->route('bbl.all.meeting')->with('success',trans('flash.UpdatedSuccessfully'));
+        $newmeeting->update($input);
+        return redirect()->route('bbl.all.meeting')->with('success', trans('flash.UpdatedSuccessfully'));
     }
 
-    public function delete($meetingid){
-    	$meeting = BBL::find($meetingid);
+    public function delete($meetingid)
+    {
+        $meeting = BBL::find($meetingid);
 
-    	if(isset($meeting)){
-    		$meeting->delete();
-    		return back()->with('deleted',trans('flash.DeletedSuccessfully'));
-    	}else{
-    		return back()->with('deleted','Meeting not found !');
-    	}
+        if (isset($meeting)) {
+            $meeting->delete();
+            return back()->with('deleted', trans('flash.DeletedSuccessfully'));
+        } else {
+            return back()->with('deleted', 'Meeting not found !');
+        }
     }
 
-    public function setting(Request $request){
+    public function setting(Request $request)
+    {
 
-    	$env_update = $this->changeEnv([
-          
-          'BBB_SECURITY_SALT' => $request->BBB_SECURITY_SALT,
-          'BBB_SERVER_BASE_URL' => $request->BBB_SERVER_BASE_URL
-          
+        $env_update = $this->changeEnv([
+
+            'BBB_SECURITY_SALT' => $request->BBB_SECURITY_SALT,
+            'BBB_SERVER_BASE_URL' => $request->BBB_SERVER_BASE_URL
+
         ]);
 
-        if($env_update){
-        	return back()->with('success','Settings Updated Successfully !');
-        }else{
-        	return back()->with('deleted','Oops ! Please try again..');
+        if ($env_update) {
+            return back()->with('success', 'Settings Updated Successfully !');
+        } else {
+            return back()->with('deleted', 'Oops ! Please try again..');
         }
     }
 
-    public function apiCreate($id){
+    public function apiCreate($id)
+    {
 
-        
+
         $bbb = new BigBlueButton();
         $m = BBL::find($id);
         $userid = Crypt::encrypt(Auth::user()->id);
         $meetingid = Crypt::encrypt($m->meetingid);
-        $urlLogout = url('/bigblue/api/callback?meetingID='.$meetingid.'&user='.$userid);
+        $urlLogout = url('/bigblue/api/callback?meetingID=' . $meetingid . '&user=' . $userid);
         $createMeetingParams = new CreateMeetingParameters($m->meetingid, $m->meetingname);
         $createMeetingParams->setAttendeePassword($m->attendeepw);
         $createMeetingParams->setModeratorPassword($m->modpw);
         $createMeetingParams->setDuration($m->duration);
         $createMeetingParams->setMaxParticipants($m->setMaxParticipants);
         $createMeetingParams->setMuteOnStart($m->setMuteOnStart == 0 ? false : true);
-        $createMeetingParams->setCopyright(date('Y').' | '.config('app.name'));
+        $createMeetingParams->setCopyright(date('Y') . ' | ' . config('app.name'));
 
-        if($m->welcomemsg != ''){
+        if ($m->welcomemsg != '') {
             $createMeetingParams->setWelcomeMessage($m->welcomemsg);
         }
 
         $createMeetingParams->setWebcamsOnlyForModerator(true);
-        
+
         $createMeetingParams->setRecord($m->allow_record == 0 ? false : true);
         $createMeetingParams->setAllowStartStopRecording($m->allow_record == 0 ? false : true);
         $createMeetingParams->setAutoStartRecording($m->allow_record == 0 ? false : true);
         $createMeetingParams->setLogoutUrl($urlLogout);
 
         $response = $bbb->createMeeting($createMeetingParams);
-        
+
         if ($response->getReturnCode() == 'FAILED') {
 
             return 'Can\'t create room! please contact our administrator.';
@@ -205,29 +207,28 @@ class BigBlueController extends Controller
             return redirect($url);
         }
 
-     
+
     }
 
-    public function logout(Request $request){
+    public function logout(Request $request)
+    {
 
         $userid = Crypt::decrypt($request->user);
         $meetingid = Crypt::decrypt($request->meetingID);
-        $findmeeting = BBL::where('meetingid','=',$meetingid)->first();
+        $findmeeting = BBL::where('meetingid', '=', $meetingid)->first();
 
-        if(isset($findmeeting)){
+        if (isset($findmeeting)) {
 
             $userid = Cookie::get('user_selection');
             $user = User::find($userid);
 
-            if(isset($user))
-            {
-               $login = $user->id;
-            }
-            else{
+            if (isset($user)) {
+                $login = $user->id;
+            } else {
                 $login = Auth::user()->id;
             }
 
-            if($findmeeting->instructor_id == $login){
+            if ($findmeeting->instructor_id == $login) {
                 $findmeeting->is_ended = 1;
                 $findmeeting->save();
 
@@ -236,62 +237,63 @@ class BigBlueController extends Controller
                 $endMeetingParams = new EndMeetingParameters($meetingid, $findmeeting->modpw);
                 $response = $bbb->endMeeting($endMeetingParams);
 
-                return redirect('/')->with('success','Meeting ended successfully !');
-            }else{
-                return redirect('/')->with('success','You logout from meeting successfully !');
+                return redirect('/')->with('success', 'Meeting ended successfully !');
+            } else {
+                return redirect('/')->with('success', 'You logout from meeting successfully !');
             }
 
-        }else{
-            return redirect('/')->with('delete','No meeting exist with this id');
+        } else {
+            return redirect('/')->with('delete', 'No meeting exist with this id');
         }
 
 
     }
 
-    public function joinview($meetingid){
-         $m = BBL::where('meetingid',$meetingid)->first();
-         if($m){
-            return view('bbl.joinmeeting',compact('m'));
-         }else{
-            return back()->with('deleted','404 Meeting Not found !');
-         }
+    public function joinview($meetingid)
+    {
+        $m = BBL::where('meetingid', $meetingid)->first();
+        if ($m) {
+            return view('bbl.joinmeeting', compact('m'));
+        } else {
+            return back()->with('deleted', '404 Meeting Not found !');
+        }
     }
 
-    public function apiJoin(Request $request){
-            
-            $bbb = new BigBlueButton();
-            $m = BBL::where('meetingid',$request->meetingid)->first();
-                
-            if($m){
+    public function apiJoin(Request $request)
+    {
 
-                if($request->password != $m->attendeepw){
-                    return back()->with('delete','Invalid password Please try again!')->withInput($request->except('password'));
-                }
+        $bbb = new BigBlueButton();
+        $m = BBL::where('meetingid', $request->meetingid)->first();
 
-                if($m->is_ended == 1){
-                    return back()->with('delete','Meeting is already ended !')->withInput($request->except('password'));
-                }
+        if ($m) {
 
-                $joinMeetingParams = new JoinMeetingParameters($m->meetingid, $m->meetingname, $request->password);
-                $joinMeetingParams->setUsername($request->name);
-                $joinMeetingParams->setRedirect(true);
-                $url = $bbb->getJoinMeetingURL($joinMeetingParams);
-
-                Cookie::queue('user_selection', Auth::user()->id, 100);
-                return redirect($url);
-            }else{
-                return back()->with('delete','Meeting not found !');
+            if ($request->password != $m->attendeepw) {
+                return back()->with('delete', 'Invalid password Please try again!')->withInput($request->except('password'));
             }
 
+            if ($m->is_ended == 1) {
+                return back()->with('delete', 'Meeting is already ended !')->withInput($request->except('password'));
+            }
+
+            $joinMeetingParams = new JoinMeetingParameters($m->meetingid, $m->meetingname, $request->password);
+            $joinMeetingParams->setUsername($request->name);
+            $joinMeetingParams->setRedirect(true);
+            $url = $bbb->getJoinMeetingURL($joinMeetingParams);
+
+            Cookie::queue('user_selection', Auth::user()->id, 100);
+            return redirect($url);
+        } else {
+            return back()->with('delete', 'Meeting not found !');
+        }
+
     }
 
 
-    
     public function detailpage(Request $request, $id)
     {
-        $bbl = BBL::where('id', $id)->where('is_ended','!=',1)->first();
-        if(!$bbl){
-            return redirect('/')->with('delete','Meeting is ended !');
+        $bbl = BBL::where('id', $id)->where('is_ended', '!=', 1)->first();
+        if (!$bbl) {
+            return redirect('/')->with('delete', 'Meeting is ended !');
         }
         return view('front.bbl_detail', compact('bbl'));
     }
@@ -299,7 +301,7 @@ class BigBlueController extends Controller
 
     protected function changeEnv($data = array())
     {
-        if ( count($data) > 0 ) {
+        if (count($data) > 0) {
 
             // Read .env-file
             $env = file_get_contents(base_path() . '/.env');
@@ -308,22 +310,22 @@ class BigBlueController extends Controller
             $env = preg_split('/\s+/', $env);;
 
             // Loop through given data
-            foreach((array)$data as $key => $value){
-              // Loop through .env-data
-              foreach($env as $env_key => $env_value){
-                // Turn the value into an array and stop after the first split
-                // So it's not possible to split e.g. the App-Key by accident
-                $entry = explode("=", $env_value, 2);
+            foreach ((array)$data as $key => $value) {
+                // Loop through .env-data
+                foreach ($env as $env_key => $env_value) {
+                    // Turn the value into an array and stop after the first split
+                    // So it's not possible to split e.g. the App-Key by accident
+                    $entry = explode("=", $env_value, 2);
 
-                // Check, if new key fits the actual .env-key
-                if($entry[0] == $key){
-                    // If yes, overwrite it with the new one
-                    $env[$env_key] = $key . "=" . $value;
-                } else {
-                    // If not, keep the old one
-                    $env[$env_key] = $env_value;
+                    // Check, if new key fits the actual .env-key
+                    if ($entry[0] == $key) {
+                        // If yes, overwrite it with the new one
+                        $env[$env_key] = $key . "=" . $value;
+                    } else {
+                        // If not, keep the old one
+                        $env[$env_key] = $env_value;
+                    }
                 }
-              }
             }
 
             // Turn the array back to an String
@@ -336,7 +338,7 @@ class BigBlueController extends Controller
 
         } else {
 
-          return false;
+            return false;
         }
-    }	
+    }
 }

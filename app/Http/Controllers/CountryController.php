@@ -17,7 +17,7 @@ class CountryController extends Controller
     {
         $countries = Country::all();
 
-        return view("admin.country.index",compact('countries'));
+        return view("admin.country.index", compact('countries'));
     }
 
     /**
@@ -28,41 +28,40 @@ class CountryController extends Controller
     public function create()
     {
         $countries = Allcountry::all();
-        return view("admin.country.add_country",compact('countries'));
+        return view("admin.country.add_country", compact('countries'));
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
         $countries = Country::where('country_id', $request->country)->first();
 
-        if($countries == NULL){
+        if ($countries == NULL) {
 
             $data = Allcountry::where('id', $request->country)->first();
 
             DB::table('countries')->insert(
                 array(
-                    'country_id'=> $data->id,
-                    'iso'       => $data->iso,
-                    'name'      => $data->name,
-                    'nicename'  => $data->nicename,
-                    'iso3'      => $data->iso3,
-                    'numcode'   => $data->numcode,
-                    'created_at'=> \Carbon\Carbon::now()->toDateTimeString(),
+                    'country_id' => $data->id,
+                    'iso' => $data->iso,
+                    'name' => $data->name,
+                    'nicename' => $data->nicename,
+                    'iso3' => $data->iso3,
+                    'numcode' => $data->numcode,
+                    'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
                 )
             );
 
             session()->flash('success', trans('flash.AddedSuccessfully'));
-        }
-        else{
+        } else {
             session()->flash('delete', trans('flash.AlreadyExist'));
         }
-                
+
         return redirect('admin/country');
 
     }
@@ -70,7 +69,7 @@ class CountryController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Country  $country
+     * @param \App\Country $country
      * @return \Illuminate\Http\Response
      */
     public function show(Country $country)
@@ -81,21 +80,21 @@ class CountryController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Country  $country
+     * @param \App\Country $country
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
         $countries = Country::findOrFail($id);
         $allcountry = Allcountry::all();
-        return view("admin.country.edit",compact("countries", "allcountry"));
+        return view("admin.country.edit", compact("countries", "allcountry"));
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Country  $country
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Country $country
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -103,27 +102,26 @@ class CountryController extends Controller
 
         $countries = Country::where('country_id', $request->country)->first();
 
-        if($countries == NULL){
+        if ($countries == NULL) {
 
             $data = Allcountry::where('id', $request->country)->first();
 
-            DB::table('countries')->where('id',$id)
-            ->update([
-               'country_id'=> $data->country_id,
-               'iso'       => $data->iso,
-               'name'      => $data->name,
-               'nicename'  => $data->nicename,
-               'iso3'      => $data->iso3,
-               'numcode'   => $data->numcode,
+            DB::table('countries')->where('id', $id)
+                ->update([
+                    'country_id' => $data->country_id,
+                    'iso' => $data->iso,
+                    'name' => $data->name,
+                    'nicename' => $data->nicename,
+                    'iso3' => $data->iso3,
+                    'numcode' => $data->numcode,
 
-            ]);
+                ]);
 
-            session()->flash('success',trans('flash.AddedSuccessfully'));
+            session()->flash('success', trans('flash.AddedSuccessfully'));
+        } else {
+            session()->flash('delete', trans('flash.AlreadyExist'));
         }
-        else{
-            session()->flash('delete',trans('flash.AlreadyExist'));
-        }
-                
+
         return redirect('admin/country');
 
     }
@@ -131,7 +129,7 @@ class CountryController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Country  $country
+     * @param \App\Country $country
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
@@ -143,37 +141,35 @@ class CountryController extends Controller
         State::where('country_id', $obj->country_id)->delete();
         City::where('country_id', $obj->country_id)->delete();
 
-        if($value){
-            session()->flash('delete',trans('flash.DeletedSuccessfully'));
+        if ($value) {
+            session()->flash('delete', trans('flash.DeletedSuccessfully'));
             return redirect("admin/country");
         }
     }
 
 
-    public function upload_info(Request $request) 
+    public function upload_info(Request $request)
     {
         $id = $request['catId'];
-        
+
         $country = Allcountry::findOrFail($id);
-        $upload = State::where('country_id',$country->id)->pluck('name','state_id')->all();
+        $upload = State::where('country_id', $country->id)->pluck('name', 'state_id')->all();
 
         return response()->json($upload);
     }
 
 
-    public function gcity(Request $request) 
+    public function gcity(Request $request)
     {
 
         $id = $request['catId'];
 
         $state = Allstate::findOrFail($id);
-        return $upload = City::where('state_id',$state->id)->pluck('name','id')->all();
+        return $upload = City::where('state_id', $state->id)->pluck('name', 'id')->all();
 
         return response()->json($upload);
 
     }
-
-    
 
 
 }

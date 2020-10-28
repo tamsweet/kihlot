@@ -8,7 +8,7 @@ use Spatie\Translatable\HasTranslations;
 class Answer extends Model
 {
     use HasTranslations;
-    
+
     public $translatable = ['answer'];
 
     /**
@@ -18,31 +18,31 @@ class Answer extends Model
      */
     public function toArray()
     {
-      $attributes = parent::toArray();
-      
-      foreach ($this->getTranslatableAttributes() as $name) {
-          $attributes[$name] = $this->getTranslation($name, app()->getLocale());
-      }
-      
-      return $attributes;
+        $attributes = parent::toArray();
+
+        foreach ($this->getTranslatableAttributes() as $name) {
+            $attributes[$name] = $this->getTranslation($name, app()->getLocale());
+        }
+
+        return $attributes;
     }
 
     protected $table = 'answers';
-    
+
     protected $fillable = ['instructor_id', 'ans_user_id', 'ques_user_id', 'course_id', 'question_id', 'answer', 'status',];
 
     public function user()
     {
-      return $this->belongsTo('App\User', 'ans_user_id','id');
+        return $this->belongsTo('App\User', 'ans_user_id', 'id');
     }
-    
+
     public function courses()
     {
-    	return $this->belongsTo('App\Course','course_id','id');
+        return $this->belongsTo('App\Course', 'course_id', 'id');
     }
 
     public function question()
     {
-    	return $this->belongsTo('App\Question','question_id','id');
+        return $this->belongsTo('App\Question', 'question_id', 'id');
     }
 }

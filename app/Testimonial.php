@@ -7,8 +7,8 @@ use Spatie\Translatable\HasTranslations;
 
 class Testimonial extends Model
 {
-	use HasTranslations;
-    
+    use HasTranslations;
+
     public $translatable = ['details'];
 
     /**
@@ -18,20 +18,20 @@ class Testimonial extends Model
      */
     public function toArray()
     {
-      $attributes = parent::toArray();
-      
-      foreach ($this->getTranslatableAttributes() as $name) {
-          $attributes[$name] = $this->getTranslation($name, app()->getLocale());
-      }
-      
-      return $attributes;
-    }  
+        $attributes = parent::toArray();
+
+        foreach ($this->getTranslatableAttributes() as $name) {
+            $attributes[$name] = $this->getTranslation($name, app()->getLocale());
+        }
+
+        return $attributes;
+    }
 
     public $timestamps = false;
 
     protected $table = 'testimonials';
 
-  	protected $fillable = [
-      	'client_name','details','status','image',
-  	];
+    protected $fillable = [
+        'client_name', 'details', 'status', 'image',
+    ];
 }

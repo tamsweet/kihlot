@@ -11,12 +11,12 @@ use File;
 
 class AuthController extends Controller
 {
-   /**
+    /**
      * Redirect the user to the OAuth Provider.
      *
      * @return Response
      */
-    
+
 
     public function redirectToProvider($provider)
     {
@@ -33,10 +33,10 @@ class AuthController extends Controller
      */
     public function handleProviderCallback($provider, Request $request)
     {
-        try{
+        try {
             $user = Socialite::driver($provider)->user();
-        }catch(\Exception $ex){
-            if(!$request->has('code') || $request->has('denied')) {
+        } catch (\Exception $ex) {
+            if (!$request->has('code') || $request->has('denied')) {
                 return redirect('/');
             }
             $user = Socialite::driver($provider)->stateless()->user();
@@ -56,18 +56,17 @@ class AuthController extends Controller
      */
     public function findOrCreateUser($user, $provider)
     {
-        if($user->email == Null){
-            $user->email = $user->id.'@facebook.com';
+        if ($user->email == Null) {
+            $user->email = $user->id . '@facebook.com';
         }
         $authUser = User::where('email', $user->email)->first();
         $providerField = "{$provider}_id";
-        if($authUser){
+        if ($authUser) {
             if ($authUser->{$providerField} == $user->id) {
                 $authUser->email_verified_at = \Carbon\Carbon::now()->toDateTimeString();
                 $authUser->save();
                 return $authUser;
-            }
-            else{
+            } else {
                 $authUser->{$providerField} = $user->id;
                 $authUser->email_verified_at = \Carbon\Carbon::now()->toDateTimeString();
                 $authUser->save();
@@ -75,22 +74,21 @@ class AuthController extends Controller
             }
         }
 
-        if($user->avatar != NULL && $user->avatar != ""){
+        if ($user->avatar != NULL && $user->avatar != "") {
             $fileContents = file_get_contents($user->getAvatar());
             $user_profile = File::put(public_path() . '/images/user_img/' . $user->getId() . ".jpg", $fileContents);
             $name = $user->getId() . ".jpg";
-        }
-        else {
+        } else {
             $name = NULL;
         }
 
         $verified = \Carbon\Carbon::now()->toDateTimeString();
 
         return User::create([
-            'fname'     => $user->name,
-            'email'    => $user->email,
-            'user_img'    => $name,
-            'email_verified_at'  => $verified,
+            'fname' => $user->name,
+            'email' => $user->email,
+            'user_img' => $name,
+            'email_verified_at' => $verified,
             $providerField => $user->id,
         ]);
     }

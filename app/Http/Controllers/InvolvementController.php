@@ -33,40 +33,40 @@ class InvolvementController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request,$id)
+    public function store(Request $request, $id)
     {
-         $request->validate([
-          'reason' => 'required',
-        
+        $request->validate([
+            'reason' => 'required',
+
         ]);
 
-          $input = $request->all();
-          $input['user_id']= $request->instructor_id;
-          $input['status'] = 0;
-          $data = Involvement::create($input); 
-        return back()->with('success','Involvement request successfully submited!');
-           
+        $input = $request->all();
+        $input['user_id'] = $request->instructor_id;
+        $input['status'] = 0;
+        $data = Involvement::create($input);
+        return back()->with('success', 'Involvement request successfully submited!');
+
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Involvement  $involvement
+     * @param \App\Involvement $involvement
      * @return \Illuminate\Http\Response
      */
     public function show(Involvement $involvement)
     {
-        $involve_requests = Involvement::where('status',1)->where('user_id',Auth::user()->id)->get();
-        return view('instructor.involverequest.applycourse',compact('involve_requests'));
+        $involve_requests = Involvement::where('status', 1)->where('user_id', Auth::user()->id)->get();
+        return view('instructor.involverequest.applycourse', compact('involve_requests'));
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Involvement  $involvement
+     * @param \App\Involvement $involvement
      * @return \Illuminate\Http\Response
      */
     public function edit(Involvement $involvement)
@@ -77,21 +77,21 @@ class InvolvementController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Involvement  $involvement
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Involvement $involvement
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Involvement $id)
     {
-        $id->update(['status'=> 1 ]);
+        $id->update(['status' => 1]);
 
-        return back()->with('success',trans('flash.RequestAccepted'));
+        return back()->with('success', trans('flash.RequestAccepted'));
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Involvement  $involvement
+     * @param \App\Involvement $involvement
      * @return \Illuminate\Http\Response
      */
     public function destroy(Involvement $id)

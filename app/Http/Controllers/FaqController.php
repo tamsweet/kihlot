@@ -16,7 +16,7 @@ class FaqController extends Controller
     public function index()
     {
         $faq = FaqStudent::all();
-        return view('admin.faq.index',compact('faq'));
+        return view('admin.faq.index', compact('faq'));
     }
 
     /**
@@ -32,26 +32,23 @@ class FaqController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        $data = $this->validate($request,[
-            'title'=>'required',
-            'details'=>'required',
-            'status'=>'required',
+        $data = $this->validate($request, [
+            'title' => 'required',
+            'details' => 'required',
+            'status' => 'required',
         ]);
-        
+
         $input = $request->all();
         $data = FaqStudent::create($input);
 
-        if(isset($request->status))
-        {
+        if (isset($request->status)) {
             $data->status = '1';
-        }
-        else
-        {
+        } else {
             $data->status = '0';
         }
 
@@ -63,7 +60,7 @@ class FaqController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\faq  $faq
+     * @param \App\faq $faq
      * @return \Illuminate\Http\Response
      */
     public function show(faq $faq)
@@ -74,50 +71,47 @@ class FaqController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\faq  $faq
+     * @param \App\faq $faq
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
-        $find= FaqStudent::find($id);
+        $find = FaqStudent::find($id);
         return view('admin.faq.faq_edit', compact('find'));
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\faq  $faq
+     * @param \Illuminate\Http\Request $request
+     * @param \App\faq $faq
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request,$id)
+    public function update(Request $request, $id)
     {
         $data = FaqStudent::findorfail($id);
         $input = $request->all();
 
-        if(isset($request->status))
-        {
+        if (isset($request->status)) {
             $input['status'] = '1';
-        }
-        else
-        {
+        } else {
             $input['status'] = '0';
         }
-        
+
         $data->update($input);
-        
-        return redirect('faq'); 
+
+        return redirect('faq');
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\faq  $faq
+     * @param \App\faq $faq
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        DB::table('faq_students')->where('id',$id)->delete();
+        DB::table('faq_students')->where('id', $id)->delete();
         return redirect('faq');
     }
 }

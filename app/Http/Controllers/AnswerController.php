@@ -20,43 +20,43 @@ class AnswerController extends Controller
     public function create()
     {
         $course = Course::all();
-        return view('admin.course.answer.add',compact('course'));
+        return view('admin.course.answer.add', compact('course'));
     }
 
     public function store(Request $request)
     {
-        $data = $this->validate($request,[
+        $data = $this->validate($request, [
             'answer' => 'required',
             'question_id' => 'required'
         ]);
 
         $input = $request->all();
         $data = Answer::create($input);
-        $data->save(); 
+        $data->save();
 
         Session::flash('success', trans('flash.AddedSuccessfully'));
-        return redirect()->route('course.show',$request->course_id);
+        return redirect()->route('course.show', $request->course_id);
     }
 
     public function edit($id)
     {
-        $show= Answer::find($id);
+        $show = Answer::find($id);
         return view('admin.course.answer.edit', compact('show'));
     }
 
     public function update(Request $request, $id)
     {
-        
+
         $data = Answer::findorfail($id);
         $input = $request->all();
         $data->update($input);
 
-        return redirect()->route('course.show',$request->course_id);
+        return redirect()->route('course.show', $request->course_id);
     }
 
     public function destroy($id)
     {
-        DB::table('answers')->where('id',$id)->delete();
+        DB::table('answers')->where('id', $id)->delete();
         return back()->with('delete', trans('flash.DeletedSuccessfully'));
     }
 
@@ -65,7 +65,7 @@ class AnswerController extends Controller
         $input = $request->all();
         $data = Answer::create($input);
         $data->save();
-         
+
         Session::flash('success', trans('flash.AddedSuccessfully'));
         return back();
     }

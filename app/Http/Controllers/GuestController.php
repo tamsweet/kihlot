@@ -6,7 +6,8 @@ use Illuminate\Http\Request;
 
 class GuestController extends Controller
 {
-    public function offlineview() {
-    	return view('offline');
+    public function offlineview()
+    {
+        return view('offline');
     }
 }

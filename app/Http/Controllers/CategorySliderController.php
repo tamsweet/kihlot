@@ -10,9 +10,9 @@ class CategorySliderController extends Controller
 {
     public function show()
     {
-    	$category = Categories::orderBy('position','ASC')->get();
-    	$category_slider = CategorySlider::first();
-    	return view('admin.category_slider.edit', compact('category', 'category_slider'));
+        $category = Categories::orderBy('position', 'ASC')->get();
+        $category_slider = CategorySlider::first();
+        return view('admin.category_slider.edit', compact('category', 'category_slider'));
     }
 
     public function update(Request $request)
@@ -25,19 +25,16 @@ class CategorySliderController extends Controller
 
         $cat = CategorySlider::first();
 
-    	if(isset($cat))
-        {
+        if (isset($cat)) {
             $data = CategorySlider::first();
             $input = $request->all();
             $data->update($input);
-        }
-        else
-        {
+        } else {
             $input = $request->all();
             $data = CategorySlider::create($input);
             $data->save();
 
         }
-        return back()->with('message',trans('flash.UpdatedSuccessfully'));
+        return back()->with('message', trans('flash.UpdatedSuccessfully'));
     }
 }

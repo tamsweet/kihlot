@@ -14,76 +14,59 @@ class ApplyCouponController extends Controller
 {
     public function applycoupon(Request $request)
     {
-    	$coupon = Coupon::where('code', $request->coupon)->first();
-    	$mytime = Carbon\Carbon::now();
-    	$date = $mytime->toDateTimeString();
+        $coupon = Coupon::where('code', $request->coupon)->first();
+        $mytime = Carbon\Carbon::now();
+        $date = $mytime->toDateTimeString();
 
-    	if(isset($coupon)){
+        if (isset($coupon)) {
 
 
-    		if($coupon->expirydate >= $date)
-    		{
-    			if($coupon->maxusage != 0)
-    			{
-    				if($coupon->link_by == 'course')
-                    {
+            if ($coupon->expirydate >= $date) {
+                if ($coupon->maxusage != 0) {
+                    if ($coupon->link_by == 'course') {
 
                         return $this->validCouponForCourse($coupon);
 
-                    }
-                    elseif($coupon->link_by == 'cart')
-                    {
+                    } elseif ($coupon->link_by == 'cart') {
 
                         return $this->validCouponForCart($coupon);
 
-                    }
-                    elseif($coupon->link_by == 'category')
-                    {
+                    } elseif ($coupon->link_by == 'category') {
 
                         return $this->validCouponForCategory($coupon);
 
                     }
-    			}
-    			else
-    			{
-    				return back()->with('fail', 'Coupon max limit reached !');
-    			}
+                } else {
+                    return back()->with('fail', 'Coupon max limit reached !');
+                }
 
-    		}
-    		else
-    		{
-    			return back()->with('fail','Coupon Expired !');
-    		}
+            } else {
+                return back()->with('fail', 'Coupon Expired !');
+            }
 
-    	}else{
-    		return back()->with('fail','Invalid Coupon !');
-    	}
+        } else {
+            return back()->with('fail', 'Invalid Coupon !');
+        }
 
     }
 
     public function validCouponForCourse($coupon)
     {
-    	$cart = Cart::where('course_id', '=', $coupon['course_id'])->where('user_id', '=', Auth::user()->id)->first();
+        $cart = Cart::where('course_id', '=', $coupon['course_id'])->where('user_id', '=', Auth::user()->id)->first();
 
         $carts = Cart::where('user_id', '=', Auth::user()->id)
             ->get();
         $per = 0;
 
-        if (isset($cart))
-        {
-        	if ($cart->course_id == $coupon->course_id)
-            {
+        if (isset($cart)) {
+            if ($cart->course_id == $coupon->course_id) {
 
-                if ($coupon->distype == 'per')
-                {
+                if ($coupon->distype == 'per') {
                     $per = $cart->offer_price * $coupon->amount / 100;
-                }
-                else
-                {
+                } else {
                     $per = $coupon->amount;
                 }
 
-                
 
                 // Putting a session//
                 Session::put('coupanapplied', ['code' => $coupon->code, 'cpnid' => $coupon->id, 'discount' => $per, 'msg' => "$coupon->code is applied !", 'appliedOn' => 'course']);
@@ -99,140 +82,105 @@ class ApplyCouponController extends Controller
 
                 return back();
 
-            }
-            else
-            {
+            } else {
                 return back()
                     ->with('fail', 'Sorry no product found in your cart for this coupon !');
             }
-        }
-        else
-        {
+        } else {
             return back()->with('fail', 'Sorry no product found in your cart for this coupon !');
         }
     }
 
     public function validCouponForCart($coupon)
     {
-    	$cart = Cart::where('user_id', '=', Auth::user()->id)->get();
+        $cart = Cart::where('user_id', '=', Auth::user()->id)->get();
 
         $total = 0;
 
-        if (isset($cart))
-        {
+        if (isset($cart)) {
 
-            foreach ($cart as $key => $c)
-            {
-                if ($c->offer_price != 0)
-                {
+            foreach ($cart as $key => $c) {
+                if ($c->offer_price != 0) {
                     $total = $total + $c->offer_price;
-                }
-                else
-                {
+                } else {
                     $total = $total + $c->price;
                 }
             }
-            if ($coupon->minamount != 0)
-            {
+            if ($coupon->minamount != 0) {
 
-                if ($total >= $coupon->minamount)
-                {
-                   	//check cart amount 
-                  	$totaldiscount = 0;
-					$per = 0;
+                if ($total >= $coupon->minamount) {
+                    //check cart amount
+                    $totaldiscount = 0;
+                    $per = 0;
 
-					foreach ($cart as $key => $c)
-					{
+                    foreach ($cart as $key => $c) {
 
-					    if ($coupon->distype == 'per')
-					    {
+                        if ($coupon->distype == 'per') {
 
-					        if ($c->offer_price != 0)
-					        {
-					            $per = $c->offer_price * $coupon->amount / 100;
-					            $totaldiscount = $totaldiscount + $per;
-					        }
-					        else
-					        {
-					            $per = $c->price * $coupon->amount / 100;
-					            $totaldiscount = $totaldiscount + $per;
-					        }
+                            if ($c->offer_price != 0) {
+                                $per = $c->offer_price * $coupon->amount / 100;
+                                $totaldiscount = $totaldiscount + $per;
+                            } else {
+                                $per = $c->price * $coupon->amount / 100;
+                                $totaldiscount = $totaldiscount + $per;
+                            }
 
-					    }
-					    else
-					    {
+                        } else {
 
-					        if ($c->offer_price != 0)
-					        {
-					            $per = $coupon->amount / count($cart);
-					            $totaldiscount = $totaldiscount + $per;
-					        }
-					        else
-					        {
-					            $per = $coupon->amount / count($cart);
-					            $totaldiscount = $totaldiscount + $per;
-					        }
+                            if ($c->offer_price != 0) {
+                                $per = $coupon->amount / count($cart);
+                                $totaldiscount = $totaldiscount + $per;
+                            } else {
+                                $per = $coupon->amount / count($cart);
+                                $totaldiscount = $totaldiscount + $per;
+                            }
 
-					    }
-					    // return $per;
+                        }
+                        // return $per;
 
-					    Cart::where('id', '=', $c->id)
-					        ->update(['distype' => 'cart', 'disamount' => $per]);
+                        Cart::where('id', '=', $c->id)
+                            ->update(['distype' => 'cart', 'disamount' => $per]);
 
-					}
+                    }
 
-					//Putting a session//
-					Session::put('coupanapplied', ['code' => $coupon->code, 'cpnid' => $coupon->id, 'discount' => $totaldiscount, 'msg' => "$coupon->code Applied Successfully !", 'appliedOn' => 'cart']);
+                    //Putting a session//
+                    Session::put('coupanapplied', ['code' => $coupon->code, 'cpnid' => $coupon->id, 'discount' => $totaldiscount, 'msg' => "$coupon->code Applied Successfully !", 'appliedOn' => 'cart']);
 
                     DB::table('coupons')->where('code', '=', $coupon['code'])->decrement('maxusage', 1);
 
-					//end return success with discounted amount
-					return back();
+                    //end return success with discounted amount
+                    return back();
 
-                    
-                }
-                else
-                {
+
+                } else {
                     return back()
                         ->with('fail', 'For Apply this coupon your cart total should be ' . $coupon->minamount . ' or greater !');
                 }
 
-            }
-            else
-            {
+            } else {
 
-                //check cart amount 
+                //check cart amount
                 $totaldiscount = 0;
                 $per = 0;
 
-                foreach ($cart as $key => $c)
-                {
+                foreach ($cart as $key => $c) {
 
-                    if ($coupon->distype == 'per')
-                    {
+                    if ($coupon->distype == 'per') {
 
-                        if ($c->offer_price != 0)
-                        {
+                        if ($c->offer_price != 0) {
                             $per = $c->offer_price * $coupon->amount / 100;
                             $totaldiscount = $totaldiscount + $per;
-                        }
-                        else
-                        {
+                        } else {
                             $per = $c->price * $coupon->amount / 100;
                             $totaldiscount = $totaldiscount + $per;
                         }
 
-                    }
-                    else
-                    {
+                    } else {
 
-                        if ($c->offer_price != 0)
-                        {
+                        if ($c->offer_price != 0) {
                             $per = $coupon->amount / count($cart);
                             $totaldiscount = $totaldiscount + $per;
-                        }
-                        else
-                        {
+                        } else {
                             $per = $coupon->amount / count($cart);
                             $totaldiscount = $totaldiscount + $per;
                         }
@@ -259,77 +207,59 @@ class ApplyCouponController extends Controller
 
     public function validCouponForCategory($coupon)
     {
-    	
+
         $cart = Cart::where('user_id', '=', Auth::user()->id)
-        ->get();
+            ->get();
         $catcart = collect();
 
-        foreach ($cart as $row)
-        {
+        foreach ($cart as $row) {
 
             if ($row
-                ->courses
-                ->category->id == $coupon->category_id)
-            {
+                    ->courses
+                    ->category->id == $coupon->category_id) {
                 $catcart->push($row);
 
             }
 
         }
 
-        if (count($catcart) > 0)
-        {
+        if (count($catcart) > 0) {
 
             $total = 0;
             $totaldiscount = 0;
             $distotal = 0;
 
-            foreach ($catcart as $key => $row)
-            {
-                if ($row->offer_price != 0)
-                {
+            foreach ($catcart as $key => $row) {
+                if ($row->offer_price != 0) {
                     $total = $total + $row->offer_price;
-                }
-                else
-                {
+                } else {
                     $total = $total + $row->price;
                 }
             }
 
 
-
-            foreach ($catcart as $key => $c)
-            {
+            foreach ($catcart as $key => $c) {
 
                 $per = 0;
 
-                if ($coupon->distype == 'per')
-                {
+                if ($coupon->distype == 'per') {
 
-                    if ($c->offer_price != 0)
-                    {
+                    if ($c->offer_price != 0) {
 
                         $per = $c->offer_price * $coupon->amount / 100;
                         $totaldiscount = $totaldiscount + $per;
 
-                    }
-                    else
-                    {
+                    } else {
                         $per = $c->price * $coupon->amount / 100;
                         $totaldiscount = $totaldiscount + $per;
                     }
 
-                }
-                else
-                {
+                } else {
 
-                    if ($c->offer_price != 0)
-                    {
+                    if ($c->offer_price != 0) {
                         $per = $coupon->amount / count($catcart);
                         $totaldiscount = $totaldiscount + $per;
-                    }
-                    else
-                    {
+                    } else {
                         $per = $coupon->amount / count($catcart);
                         $totaldiscount = $totaldiscount + $per;
                     }
@@ -338,33 +268,29 @@ class ApplyCouponController extends Controller
 
                 Cart::where('id', '=', $c->id)
                     ->where('user_id', Auth::user()
-                    ->id)
+                        ->id)
                     ->update(['distype' => 'category', 'disamount' => $per]);
 
                 Cart::where('category_id', '!=', $c->courses->category['id'])->where('user_id', '=', Auth::user()
-            	    ->id)
-            	    ->update(['distype' => NULL, 'disamount' => NULL]);
+                    ->id)
+                    ->update(['distype' => NULL, 'disamount' => NULL]);
 
-                
+
             }
 
 
-            if ($coupon->minamount != 0)
-            {
+            if ($coupon->minamount != 0) {
 
-                if ($total >= $coupon->minamount)
-                {
+                if ($total >= $coupon->minamount) {
 
                     //Putting a session//
                     Session::put('coupanapplied', ['code' => $coupon->code, 'cpnid' => $coupon->id, 'discount' => $totaldiscount, 'msg' => "$coupon->code Applied Successfully !", 'appliedOn' => 'category']);
 
-                     DB::table('coupons')->where('code', '=', $coupon['code'])->decrement('maxusage', 1);
+                    DB::table('coupons')->where('code', '=', $coupon['code'])->decrement('maxusage', 1);
 
                     return back();
 
-                }
-                else
-                {
+                } else {
                     Cart::where('user_id', Auth::user()
                         ->id)
                         ->update(['distype' => NULL, 'disamount' => NULL]);
@@ -372,9 +298,7 @@ class ApplyCouponController extends Controller
                         ->with('fail', 'For Apply this coupon your cart total should be ' . $coupon->minamount . ' or greater !');
                 }
 
-            }
-            else
-            {
+            } else {
                 //Putting a session//
                 Session::put('coupanapplied', ['code' => $coupon->code, 'cpnid' => $coupon->id, 'discount' => $totaldiscount, 'msg' => "$coupon->code Applied Successfully !", 'appliedOn' => 'category']);
 
@@ -383,14 +307,12 @@ class ApplyCouponController extends Controller
                 return back();
             }
 
-        }
-        else
-        {
+        } else {
             return back()
                 ->with('fail', 'Sorry no matching product found in your cart for this coupon !');
         }
 
-        
+
     }
 
 
@@ -400,12 +322,12 @@ class ApplyCouponController extends Controller
         Session::forget('coupanapplied');
 
         DB::table('coupons')->where('id', $cpnid)->increment('maxusage', 1);
-        
+
         Cart::where('user_id', '=', Auth::user()->id)
             ->update(['distype' => NULL, 'disamount' => NULL]);
         return back()
             ->with('fail', 'Coupon Removed !');
-       
+
     }
 
 

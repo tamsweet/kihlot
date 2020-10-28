@@ -8,12 +8,11 @@ use App\WatchCourse;
 
 class TestController extends Controller
 {
-    
-   public function test()
-   {
-   	 return view('front.instructor');
-   }
 
-   
+    public function test()
+    {
+        return view('front.instructor');
+    }
+
 
 }

@@ -7,7 +7,7 @@ use Spatie\Translatable\HasTranslations;
 
 class CourseText extends Model
 {
-	use HasTranslations;
+    use HasTranslations;
 
     public $translatable = ['heading', 'sub_heading'];
 
@@ -18,16 +18,16 @@ class CourseText extends Model
      */
     public function toArray()
     {
-      $attributes = parent::toArray();
-      
-      foreach ($this->getTranslatableAttributes() as $name) {
-          $attributes[$name] = $this->getTranslation($name, app()->getLocale());
-      }
-      
-      return $attributes;
-    } 
+        $attributes = parent::toArray();
+
+        foreach ($this->getTranslatableAttributes() as $name) {
+            $attributes[$name] = $this->getTranslation($name, app()->getLocale());
+        }
+
+        return $attributes;
+    }
 
     protected $table = 'course_texts';
 
-    protected $fillable = [ 'heading', 'sub_heading' ];
+    protected $fillable = ['heading', 'sub_heading'];
 }

@@ -34,6 +34,7 @@ class UserController extends Controller
     {
         return $this->middleware('auth');
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -63,7 +64,7 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
 
@@ -81,21 +82,20 @@ class UserController extends Controller
 
 
         $input = $request->all();
-        if ($file = $request->file('user_img')) 
-        {            
+        if ($file = $request->file('user_img')) {
             $optimizeImage = Image::make($file);
-            $optimizePath = public_path().'/images/user_img/';
-            $image = time().$file->getClientOriginalName();
-            $optimizeImage->save($optimizePath.$image, 72);
+            $optimizePath = public_path() . '/images/user_img/';
+            $image = time() . $file->getClientOriginalName();
+            $optimizeImage->save($optimizePath . $image, 72);
             $input['user_img'] = $image;
-            
+
         }
 
         $input['password'] = Hash::make($request->password);
         $input['detail'] = $request->detail;
-        $input['email_verified_at'] = \Carbon\Carbon::now()->toDateTimeString();           
+        $input['email_verified_at'] = \Carbon\Carbon::now()->toDateTimeString();
         $data = User::create($input);
-        $data->save(); 
+        $data->save();
 
         Session::flash('success', trans('flash.AddedSuccessfully'));
         return redirect('user');
@@ -105,7 +105,7 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\User  $user
+     * @param \App\User $user
      * @return \Illuminate\Http\Response
      */
 
@@ -117,7 +117,7 @@ class UserController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\User  $user
+     * @param \App\User $user
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -126,90 +126,83 @@ class UserController extends Controller
         $states = State::all();
         $countries = Country::all();
         $user = User::findorfail($id);
-        return view('admin.user.edit',compact('cities','states','countries','user'));
+        return view('admin.user.edit', compact('cities', 'states', 'countries', 'user'));
 
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\User  $user
+     * @param \Illuminate\Http\Request $request
+     * @param \App\User $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request,$id)
+    public function update(Request $request, $id)
     {
 
         $user = User::findorfail($id);
 
         $request->validate([
-              'email' => 'required|email|unique:users,email,'.$user->id,
-          ]);
+            'email' => 'required|email|unique:users,email,' . $user->id,
+        ]);
 
 
-        if(config('app.demolock') == 0){
+        if (config('app.demolock') == 0) {
 
-          $input = $request->all();
-          
-
-          if($file = $request->file('user_img')) {
-
-              if($user->user_img != null) {
-                  $content = @file_get_contents(public_path().'/images/user_img/'.$user->user_img);
-                  if ($content) {
-                    unlink(public_path().'/images/user_img/'.$user->user_img);
-                  }
-              }
-
-              $optimizeImage = Image::make($file);
-              $optimizePath = public_path().'/images/user_img/';
-              $image = time().$file->getClientOriginalName();
-              $optimizeImage->save($optimizePath.$image, 72);
-              $input['user_img'] = $image;
-            
-          }
+            $input = $request->all();
 
 
-          $verified = \Carbon\Carbon::now()->toDateTimeString();
+            if ($file = $request->file('user_img')) {
+
+                if ($user->user_img != null) {
+                    $content = @file_get_contents(public_path() . '/images/user_img/' . $user->user_img);
+                    if ($content) {
+                        unlink(public_path() . '/images/user_img/' . $user->user_img);
+                    }
+                }
+
+                $optimizeImage = Image::make($file);
+                $optimizePath = public_path() . '/images/user_img/';
+                $image = time() . $file->getClientOriginalName();
+                $optimizeImage->save($optimizePath . $image, 72);
+                $input['user_img'] = $image;
+
+            }
 
 
-          if(isset($request->verified)){
-            
-            $input['email_verified_at'] = $verified;
-          }
-          else{
-
-            
-            $input['email_verified_at'] = NULL;
-          }
+            $verified = \Carbon\Carbon::now()->toDateTimeString();
 
 
-          if(isset($request->update_pass)){
-            
-              $input['password'] = Hash::make($request->password);
-          }
-          else{
-              $input['password'] = $user->password;
-          }
+            if (isset($request->verified)) {
 
-          if(isset($request->status))
-          {
-              $input['status'] = '1';
-          }
-          else
-          {
-              $input['status'] = '0';
-          }
-
-          $user->update($input);
-
-          Session::flash('success', trans('flash.UpdatedSuccessfully'));
+                $input['email_verified_at'] = $verified;
+            } else {
 
 
-        }
-        else
-        {
-          return back()->with('delete', trans('flash.DemoCannotupdate'));
+                $input['email_verified_at'] = NULL;
+            }
+
+
+            if (isset($request->update_pass)) {
+
+                $input['password'] = Hash::make($request->password);
+            } else {
+                $input['password'] = $user->password;
+            }
+
+            if (isset($request->status)) {
+                $input['status'] = '1';
+            } else {
+                $input['status'] = '0';
+            }
+
+            $user->update($input);
+
+            Session::flash('success', trans('flash.UpdatedSuccessfully'));
+
+
+        } else {
+            return back()->with('delete', trans('flash.DemoCannotupdate'));
         }
 
         return redirect()->route('user.index');
@@ -219,7 +212,7 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\User  $user
+     * @param \App\User $user
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
@@ -227,16 +220,14 @@ class UserController extends Controller
 
         $user = User::find($id);
 
-        if(config('app.demolock') == 0){
+        if (config('app.demolock') == 0) {
 
-            if ($user->user_img != null)
-            {
-                    
-                $image_file = @file_get_contents(public_path().'/images/user_img/'.$user->user_img);
+            if ($user->user_img != null) {
 
-                if($image_file)
-                {
-                    unlink(public_path().'/images/user_img/'.$user->user_img);
+                $image_file = @file_get_contents(public_path() . '/images/user_img/' . $user->user_img);
+
+                if ($image_file) {
+                    unlink(public_path() . '/images/user_img/' . $user->user_img);
                 }
             }
 
@@ -254,19 +245,14 @@ class UserController extends Controller
             Instructor::where('user_id', $id)->delete();
             CourseProgress::where('user_id', $id)->delete();
 
-            if($value)
-            {
-                session()->flash('delete',trans('flash.DeletedSuccessfully'));
+            if ($value) {
+                session()->flash('delete', trans('flash.DeletedSuccessfully'));
                 return redirect('user');
             }
-        }
-        else
-        {
-            return back()->with('delete',trans('flash.DemoCannotupdate'));
+        } else {
+            return back()->with('delete', trans('flash.DemoCannotupdate'));
         }
     }
 
 
-
-    
 }

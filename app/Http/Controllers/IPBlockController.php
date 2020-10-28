@@ -11,8 +11,8 @@ class IPBlockController extends Controller
 {
     public function view()
     {
-    	$settings = Setting::first();
-    	return view('admin.ipblock.edit', compact('settings'));
+        $settings = Setting::first();
+        return view('admin.ipblock.edit', compact('settings'));
     }
 
     public function update(Request $request)
@@ -21,10 +21,10 @@ class IPBlockController extends Controller
 
         $setting = Setting::first();
 
-	    $setting->ipblock = $request->ipblock;
+        $setting->ipblock = $request->ipblock;
 
-	    $setting->save();
+        $setting->save();
 
-    	return back();
+        return back();
     }
 }

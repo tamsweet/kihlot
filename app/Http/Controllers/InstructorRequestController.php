@@ -12,19 +12,19 @@ class InstructorRequestController extends Controller
     public function index()
     {
         $items = Instructor::where('status', '0')->get();
-        return view('admin.instructor.instructor_request.index',compact('items'));
+        return view('admin.instructor.instructor_request.index', compact('items'));
     }
 
     public function create()
     {
         $data = Instructor::all();
-        return view('admin.instructor.instructor_request.create',compact('data'));
+        return view('admin.instructor.instructor_request.create', compact('data'));
     }
 
     public function edit($id)
     {
         $show = Instructor::where('id', $id)->first();
-        return view('admin.instructor.instructor_request.view',compact('show'));
+        return view('admin.instructor.instructor_request.view', compact('show'));
     }
 
     public function update(Request $request, $id)
@@ -32,37 +32,31 @@ class InstructorRequestController extends Controller
 
         $data = Instructor::findorfail($id);
         $input['status'] = $request->status;
-        
-        
 
-        if($data->status == 1)
-        {
+
+        if ($data->status == 1) {
             $show = User::where('id', $request->user_id)->first();
             $input['role'] = 'user';
-            
+
             User::where('id', $request->user_id)
-                    ->update(['role' => 'user']);
-                    
-            
-            
+                ->update(['role' => 'user']);
+
+
             Instructor::where('user_id', $request->user_id)
-                    ->update(['status' => 0]);
-            
-        }
-        else
-        { 
-            
+                ->update(['status' => 0]);
+
+        } else {
+
             $show = User::where('id', $request->user_id)->first();
             $abc['role'] = $request->role;
-            
+
             User::where('id', $request->user_id)
-                    ->update(['role' => $request->role]);
-                    
-           
-            
+                ->update(['role' => $request->role]);
+
+
             Instructor::where('user_id', $request->user_id)
-                    ->update(['status' => 1]);
-            
+                ->update(['status' => 1]);
+
         }
 
         $show = User::where('id', $request->user_id)->first();
@@ -70,23 +64,23 @@ class InstructorRequestController extends Controller
         $input['mobile'] = $request->mobile;
         $input['gender'] = $request->gender;
         $input['dob'] = $request->dob;
-        
+
         User::where('id', $request->user_id)
-                    ->update(['detail' => $request->detail, 'mobile' => $request->mobile, 'gender' => $request->gender, 'dob' => $request->dob ]);
+            ->update(['detail' => $request->detail, 'mobile' => $request->mobile, 'gender' => $request->gender, 'dob' => $request->dob]);
 
         return redirect()->route('requestinstructor.index');
     }
 
     public function destroy($id)
     {
-        DB::table('instructors')->where('id',$id)->delete();
+        DB::table('instructors')->where('id', $id)->delete();
         return back();
     }
 
     public function allinstructor()
     {
         $items = Instructor::all();
-        return view('admin.instructor.all_instructor.index',compact('items'));
+        return view('admin.instructor.all_instructor.index', compact('items'));
     }
 
     public function instructorpage()
@@ -99,34 +93,31 @@ class InstructorRequestController extends Controller
     {
         $users = Instructor::where('user_id', $request->user_id)->get();
 
-        if(!$users->isEmpty()){
-            return back()->with('delete',trans('flash.AlreadyRequested'));  
-        }
-        else{
+        if (!$users->isEmpty()) {
+            return back()->with('delete', trans('flash.AlreadyRequested'));
+        } else {
 
             $input = $request->all();
 
-            if ($file = $request->file('image'))
-            {
-                $name = time().$file->getClientOriginalName();
+            if ($file = $request->file('image')) {
+                $name = time() . $file->getClientOriginalName();
                 $file->move('images/instructor', $name);
                 $input['image'] = $name;
             }
 
 
-            if($file = $request->file('file'))
-            {
-                $name = time().$file->getClientOriginalName();
-                $file->move('files/instructor/',$name);
+            if ($file = $request->file('file')) {
+                $name = time() . $file->getClientOriginalName();
+                $file->move('files/instructor/', $name);
                 $input['file'] = $name;
             }
-                      
-            
+
+
             $data = Instructor::create($input);
-            $data->save(); 
+            $data->save();
         }
 
-        return back()->with('success',trans('flash.RequestSuccessfully'));
+        return back()->with('success', trans('flash.RequestSuccessfully'));
 
     }
 }

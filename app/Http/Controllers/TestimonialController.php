@@ -14,11 +14,11 @@ class TestimonialController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    
+
     public function index()
     {
         $test = Testimonial::all();
-        return view('admin.testimonial.index',compact('test'));
+        return view('admin.testimonial.index', compact('test'));
     }
 
     /**
@@ -34,43 +34,38 @@ class TestimonialController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        $data = $this->validate($request,[
-            'client_name'=>'required',
-            'details'=>'required',
-            'image'=>'required',
+        $data = $this->validate($request, [
+            'client_name' => 'required',
+            'details' => 'required',
+            'image' => 'required',
         ]);
 
 
         $input = $request->all();
-        if ($file = $request->file('image')) 
-        {       
-          $optimizeImage = Image::make($file);
-          $optimizePath = public_path().'/images/testimonial/';
-          $image = time().$file->getClientOriginalName();
-          $optimizeImage->save($optimizePath.$image, 72);
+        if ($file = $request->file('image')) {
+            $optimizeImage = Image::make($file);
+            $optimizePath = public_path() . '/images/testimonial/';
+            $image = time() . $file->getClientOriginalName();
+            $optimizeImage->save($optimizePath . $image, 72);
 
-          $input['image'] = $image;
-          
+            $input['image'] = $image;
+
         }
-
 
 
         $data = Testimonial::create($input);
 
-        if(isset($request->status))
-        {
+        if (isset($request->status)) {
             $data->status = '1';
-        }
-        else
-        {
+        } else {
             $data->status = '0';
         }
-        
+
         $data->save();
 
         return redirect('testimonial');
@@ -79,7 +74,7 @@ class TestimonialController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\testimonial  $testimonial
+     * @param \App\testimonial $testimonial
      * @return \Illuminate\Http\Response
      */
 
@@ -91,53 +86,48 @@ class TestimonialController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\testimonial  $testimonial
+     * @param \App\testimonial $testimonial
      * @return \Illuminate\Http\Response
      */
 
     public function edit($id)
     {
-        $test= Testimonial::find($id);
+        $test = Testimonial::find($id);
         return view('admin.testimonial.testi_edit', compact('test'));
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\testimonial  $testimonial
+     * @param \Illuminate\Http\Request $request
+     * @param \App\testimonial $testimonial
      * @return \Illuminate\Http\Response
      */
 
-    public function update(Request $request,$id)
+    public function update(Request $request, $id)
     {
 
         $testimonial = Testimonial::findorfail($id);
 
         $input = $request->all();
 
-        if ($file = $request->file('image'))
-        {
-            
-            if($testimonial->image != "")
-            {
-                $content = @file_get_contents(public_path().'/images/testimonial/'.$testimonial->image);
+        if ($file = $request->file('image')) {
+
+            if ($testimonial->image != "") {
+                $content = @file_get_contents(public_path() . '/images/testimonial/' . $testimonial->image);
                 if ($content) {
-                  unlink(public_path().'/images/testimonial/'.$testimonial->image);
+                    unlink(public_path() . '/images/testimonial/' . $testimonial->image);
                 }
             }
 
-            $name = time().$file->getClientOriginalName();
+            $name = time() . $file->getClientOriginalName();
             $file->move('images/testimonial', $name);
             $input['image'] = $name;
         }
 
-        if(isset($request->status))
-        {
+        if (isset($request->status)) {
             $input['status'] = '1';
-        }
-        else
-        {
+        } else {
             $input['status'] = '0';
         }
 
@@ -149,13 +139,13 @@ class TestimonialController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\testimonial  $testimonial
+     * @param \App\testimonial $testimonial
      * @return \Illuminate\Http\Response
      */
 
     public function destroy($id)
     {
-        DB::table('testimonials')->where('id',$id)->delete();
+        DB::table('testimonials')->where('id', $id)->delete();
         return redirect('testimonial');
     }
 

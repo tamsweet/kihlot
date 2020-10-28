@@ -7,7 +7,7 @@ use Spatie\Translatable\HasTranslations;
 
 class FaqStudent extends Model
 {
-	use HasTranslations;
+    use HasTranslations;
 
     public $translatable = ['title', 'details'];
 
@@ -18,20 +18,20 @@ class FaqStudent extends Model
      */
     public function toArray()
     {
-      $attributes = parent::toArray();
-      
-      foreach ($this->getTranslatableAttributes() as $name) {
-          $attributes[$name] = $this->getTranslation($name, app()->getLocale());
-      }
-      
-      return $attributes;
-    } 
+        $attributes = parent::toArray();
+
+        foreach ($this->getTranslatableAttributes() as $name) {
+            $attributes[$name] = $this->getTranslation($name, app()->getLocale());
+        }
+
+        return $attributes;
+    }
 
     public $timestamps = false;
 
     protected $table = 'faq_students';
 
-  	protected $fillable = [
-      	'category_id', 'title', 'details', 'status', 
-  	];
+    protected $fillable = [
+        'category_id', 'title', 'details', 'status',
+    ];
 }

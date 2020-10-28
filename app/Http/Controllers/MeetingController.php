@@ -15,7 +15,7 @@ class MeetingController extends Controller
     public function index()
     {
         $meetings = Meeting::get();
-        return view('zoom.meeting',compact('meetings'));
+        return view('zoom.meeting', compact('meetings'));
     }
 
     /**
@@ -31,7 +31,7 @@ class MeetingController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -42,7 +42,7 @@ class MeetingController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Meeting  $meeting
+     * @param \App\Meeting $meeting
      * @return \Illuminate\Http\Response
      */
     public function show(Meeting $meeting)
@@ -53,7 +53,7 @@ class MeetingController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Meeting  $meeting
+     * @param \App\Meeting $meeting
      * @return \Illuminate\Http\Response
      */
     public function edit(Meeting $meeting)
@@ -64,8 +64,8 @@ class MeetingController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Meeting  $meeting
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Meeting $meeting
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Meeting $meeting)
@@ -76,7 +76,7 @@ class MeetingController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Meeting  $meeting
+     * @param \App\Meeting $meeting
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)

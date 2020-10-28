@@ -13,10 +13,10 @@ class CourseLanguageController extends Controller
     public function index()
     {
         $language = CourseLanguage::all();
-        return view('admin.course_language.index',compact("language"));
+        return view('admin.course_language.index', compact("language"));
     }
 
-    
+
     public function create()
     {
         //
@@ -25,7 +25,7 @@ class CourseLanguageController extends Controller
     public function store(Request $request)
     {
 
-        $data = $this->validate($request,[
+        $data = $this->validate($request, [
             'name' => 'required',
             'status' => 'required',
         ]);
@@ -34,41 +34,38 @@ class CourseLanguageController extends Controller
         $input = $request->all();
         $data = CourseLanguage::create($input);
 
-        if(isset($request->status))
-        {
+        if (isset($request->status)) {
             $data->status = '1';
-        }
-        else
-        {
+        } else {
             $data->status = '0';
         }
 
         $data->save();
 
-        Session::flash('success',trans('flash.AddedSuccessfully'));
+        Session::flash('success', trans('flash.AddedSuccessfully'));
         return redirect('courselang');
     }
-    
+
     public function show(language $language)
     {
-        
+
     }
 
-   
+
     public function edit($id)
     {
-        $language = CourseLanguage::where('id',$id)->first();
-        return view('admin.course_language.edit',compact("language"));
+        $language = CourseLanguage::where('id', $id)->first();
+        return view('admin.course_language.edit', compact("language"));
     }
 
-   
+
     public function update(Request $request, $id)
     {
-        $data = $this->validate($request,[
+        $data = $this->validate($request, [
             'name' => 'required',
             'status' => 'required',
         ]);
-        
+
         $data = CourseLanguage::findorfail($id);
         $input = $request->all();
         $data->update($input);
@@ -76,12 +73,12 @@ class CourseLanguageController extends Controller
         return redirect('courselang');
     }
 
-   
-    public function destroy( $id)
+
+    public function destroy($id)
     {
-        
-        DB::table('course_languages')->where('id',$id)->delete(); 
+
+        DB::table('course_languages')->where('id', $id)->delete();
         return back();
-    
+
     }
 }

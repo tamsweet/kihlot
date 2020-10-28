@@ -8,7 +8,7 @@ use Spatie\Translatable\HasTranslations;
 class ReviewRating extends Model
 {
     use HasTranslations;
-    
+
     public $translatable = ['review'];
 
     /**
@@ -18,28 +18,28 @@ class ReviewRating extends Model
      */
     public function toArray()
     {
-      $attributes = parent::toArray();
-      
-      foreach ($this->getTranslatableAttributes() as $name) {
-          $attributes[$name] = $this->getTranslation($name, app()->getLocale());
-      }
-      
-      return $attributes;
-    } 
+        $attributes = parent::toArray();
 
-    protected $table = 'review_ratings'; 
+        foreach ($this->getTranslatableAttributes() as $name) {
+            $attributes[$name] = $this->getTranslation($name, app()->getLocale());
+        }
+
+        return $attributes;
+    }
+
+    protected $table = 'review_ratings';
 
     protected $fillable = [
-        'course_id', 'user_id', 'learn', 'price', 'value', 'review', 'status', 'approved', 
-        'featured', ];
+        'course_id', 'user_id', 'learn', 'price', 'value', 'review', 'status', 'approved',
+        'featured',];
 
     public function user()
     {
-        return $this->belongsTo('App\User','user_id','id');
+        return $this->belongsTo('App\User', 'user_id', 'id');
     }
-    
+
     public function courses()
     {
-        return $this->belongsTo('App\Course','course_id','id');
+        return $this->belongsTo('App\Course', 'course_id', 'id');
     }
 }

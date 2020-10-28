@@ -11,28 +11,25 @@ class CurrencyController extends Controller
     public function show()
     {
 
-    	$show = Currency::first();
-    	return view('admin.currency.edit',compact('show'));
+        $show = Currency::first();
+        return view('admin.currency.edit', compact('show'));
     }
 
     public function update(Request $request)
     {
 
-    	$data = Currency::first();
+        $data = Currency::first();
         $input = $request->all();
 
-        if(isset($data))
-        {
+        if (isset($data)) {
             $data->update($input);
-        }
-        else
-        {
+        } else {
             $data = Currency::create($input);
             $data->save();
         }
 
-		return back()->with('success',trans('flash.UpdatedSuccessfully'));
+        return back()->with('success', trans('flash.UpdatedSuccessfully'));
     }
 
-    
+
 }

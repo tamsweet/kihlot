@@ -3,13 +3,15 @@
 **********************************************************************************************************
     Copyright (c) 2019.
 **********************************************************************************************************  -->
-<!-- 
+<!--
 Template Name: NextClass
 Version: 1.0.0
 Author: Media City
 -->
-<!--[if IE 8]> <html lang="en" class="ie8 no-js"> <![endif]-->
-<!--[if IE 9]> <html lang="en" class="ie9 no-js"> <![endif]-->
+<!--[if IE 8]>
+<html lang="en" class="ie8 no-js"> <![endif]-->
+<!--[if IE 9]>
+<html lang="en" class="ie9 no-js"> <![endif]-->
 <!--[if !IE]> -->
 <html lang="en">
 <!-- <![endif]-->
@@ -21,24 +23,26 @@ Author: Media City
 
 <style type="text/css">
 
-  * { font-family: DejaVu Sans, sans-serif; }
+    * {
+        font-family: DejaVu Sans, sans-serif;
+    }
 
- .cirtificate-heading {
-    font-size:50px; 
-    font-weight:bold;
-    font-style: normal;
-    margin-bottom: 20px;
-  }
-  
-  @font-face {
-    font-family: 'Great Vibes';
-    src: url('{{ public_path('GreatVibes-Regular.ttf') }}') format("ttf");
-  }
+    .cirtificate-heading {
+        font-size: 50px;
+        font-weight: bold;
+        font-style: normal;
+        margin-bottom: 20px;
+    }
 
-  .course-cirtificate {
-    padding: 40px 0;
-    background: #F7F8FA;
-  }
+    @font-face {
+        font-family: 'Great Vibes';
+        src: url('{{ public_path('GreatVibes-Regular.ttf') }}') format("ttf");
+    }
+
+    .course-cirtificate {
+        padding: 40px 0;
+        background: #F7F8FA;
+    }
 
 </style>
 
@@ -57,31 +61,41 @@ Author: Media City
             <div class="col-lg-12">
                 <div class="cirtificate-border-one text-center">
                     <div class="cirtificate-border-two">
-                       <div class="cirtificate-heading" style="">{{ __('frontstaticword.CertificateofCompletion') }}</div>
+                        <div class="cirtificate-heading"
+                             style="">{{ __('frontstaticword.CertificateofCompletion') }}</div>
                         @php
                             $mytime = Carbon\Carbon::now();
                         @endphp
-                       <p class="cirtificate-detail" style="font-size:30px">{{ __('frontstaticword.Thisistocertifythat') }} <b>&nbsp;{{ Auth::User()['fname'] }}&nbsp;{{ Auth::User()['lname'] }}</b> {{ __('frontstaticword.successfullycompleted') }} <b>{{ $course['title'] }}</b> {{ __('frontstaticword.onlinecourseon') }} <br>
-                        @if(Auth::User()->role == "admin")
-                        <span style="font-size:25px">{{ date('jS F Y', strtotime($mytime)) }}</span>
-                        @else
-                        <span style="font-size:25px">{{ date('jS F Y', strtotime($course['created_at'])) }}</span>
-                        @endif
-                      </p>
+                        <p class="cirtificate-detail"
+                           style="font-size:30px">{{ __('frontstaticword.Thisistocertifythat') }}
+                            <b>&nbsp;{{ Auth::User()['fname'] }}
+                                &nbsp;{{ Auth::User()['lname'] }}</b> {{ __('frontstaticword.successfullycompleted') }}
+                            <b>{{ $course['title'] }}</b> {{ __('frontstaticword.onlinecourseon') }} <br>
+                            @if(Auth::User()->role == "admin")
+                                <span style="font-size:25px">{{ date('jS F Y', strtotime($mytime)) }}</span>
+                            @else
+                                <span
+                                    style="font-size:25px">{{ date('jS F Y', strtotime($course['created_at'])) }}</span>
+                            @endif
+                        </p>
 
-                       <span class="cirtificate-instructor">{{ ($course->user['fname']) }} {{ ($course->user['lname']) }}</span>
-                       <br>
-                       <span class="cirtificate-one">{{ ($course->user['fname']) }} {{ ($course->user['lname']) }}, {{ __('frontstaticword.Instructor') }}</span>
-                       <br>
-                       <span>&</span>
-                       <div class="cirtificate-logo">
-                        @if($gsetting['logo_type'] == 'L')
-                            <img src="{{ asset('images/logo/'.$gsetting['logo']) }}" class="img-fluid" alt="logo">
-                        @else()
-                            <a href="{{ url('/') }}"><b><div class="logotext">{{ $gsetting['project_title'] }}</div></b></a>
-                        @endif
-                      </div>
-                      
+                        <span
+                            class="cirtificate-instructor">{{ ($course->user['fname']) }} {{ ($course->user['lname']) }}</span>
+                        <br>
+                        <span
+                            class="cirtificate-one">{{ ($course->user['fname']) }} {{ ($course->user['lname']) }}, {{ __('frontstaticword.Instructor') }}</span>
+                        <br>
+                        <span>&</span>
+                        <div class="cirtificate-logo">
+                            @if($gsetting['logo_type'] == 'L')
+                                <img src="{{ asset('images/logo/'.$gsetting['logo']) }}" class="img-fluid" alt="logo">
+                            @else()
+                                <a href="{{ url('/') }}"><b>
+                                        <div class="logotext">{{ $gsetting['project_title'] }}</div>
+                                    </b></a>
+                            @endif
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -97,7 +111,7 @@ Author: Media City
 <!-- end jquery -->
 </body>
 <!-- body end -->
-</html> 
+</html>
 
 
 

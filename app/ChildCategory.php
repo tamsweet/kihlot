@@ -8,7 +8,7 @@ use Spatie\Translatable\HasTranslations;
 class ChildCategory extends Model
 {
     use HasTranslations;
-    
+
     public $translatable = ['title'];
 
     /**
@@ -18,28 +18,28 @@ class ChildCategory extends Model
      */
     public function toArray()
     {
-      $attributes = parent::toArray();
-      
-      foreach ($this->getTranslatableAttributes() as $name) {
-          $attributes[$name] = $this->getTranslation($name, app()->getLocale());
-      }
-      
-      return $attributes;
-    } 
+        $attributes = parent::toArray();
 
-    protected $table = 'child_categories';   
+        foreach ($this->getTranslatableAttributes() as $name) {
+            $attributes[$name] = $this->getTranslation($name, app()->getLocale());
+        }
+
+        return $attributes;
+    }
+
+    protected $table = 'child_categories';
 
     protected $fillable = [
-		  'category_id', 'subcategory_id','title','status', 'slug', 'icon'
-    ]; 
+        'category_id', 'subcategory_id', 'title', 'status', 'slug', 'icon'
+    ];
 
     public function subcategory()
     {
-    	return $this->belongsTo('App\SubCategory','subcategory_id','id');
+        return $this->belongsTo('App\SubCategory', 'subcategory_id', 'id');
     }
 
- 	  public function courses()
-    {   
-        return $this->hasMany('App\Course','childcategory_id');
+    public function courses()
+    {
+        return $this->hasMany('App\Course', 'childcategory_id');
     }
 }

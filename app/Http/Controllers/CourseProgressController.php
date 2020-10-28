@@ -10,42 +10,38 @@ use Auth;
 class CourseProgressController extends Controller
 {
     public function checked(Request $request, $id)
-	{
-		$data = $this->validate($request, [
+    {
+        $data = $this->validate($request, [
             'checked' => 'required',
         ]);
 
-		$progress = CourseProgress::where('course_id','=',$id)->where('user_id', Auth::User()->id)->first();
+        $progress = CourseProgress::where('course_id', '=', $id)->where('user_id', Auth::User()->id)->first();
 
-		if(isset($progress))
-		{
-			CourseProgress::where('course_id', $id)->where('user_id', '=', Auth::user()
-                    ->id)
-                    ->update(['mark_chapter_id' => $request->checked]);
-		}
-		else
-        {
-	   	
-		   	$chapter = CourseChapter::where('course_id', $id)->get();
+        if (isset($progress)) {
+            CourseProgress::where('course_id', $id)->where('user_id', '=', Auth::user()
+                ->id)
+                ->update(['mark_chapter_id' => $request->checked]);
+        } else {
 
-		   	$chapter_id = array();
+            $chapter = CourseChapter::where('course_id', $id)->get();
 
-		   	foreach($chapter as $c)
-	        {
-	           array_push($chapter_id, "$c->id");
-	        }
+            $chapter_id = array();
 
-		   	$created_progress = CourseProgress::create([
-	            'course_id' => $id,
-	            'user_id' => Auth::User()->id,
-	            'mark_chapter_id' => $request->checked,
-	            'all_chapter_id' => $chapter_id,
-	            'created_at'  => \Carbon\Carbon::now()->toDateTimeString(),
-	            'updated_at'  => \Carbon\Carbon::now()->toDateTimeString(),
-	            ]
-	        );
-		}
+            foreach ($chapter as $c) {
+                array_push($chapter_id, "$c->id");
+            }
 
-        return back(); 
-	}
+            $created_progress = CourseProgress::create([
+                    'course_id' => $id,
+                    'user_id' => Auth::User()->id,
+                    'mark_chapter_id' => $request->checked,
+                    'all_chapter_id' => $chapter_id,
+                    'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
+                    'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
+                ]
+            );
+        }
+
+        return back();
+    }
 }

@@ -20,28 +20,30 @@ class GenerateApiController extends Controller
     {
         $this->middleware('auth');
     }
+
     public function getkey()
     {
         if (Auth::check()) {
             $key = DB::table('api_keys')->where('user_id', '=', Auth::user()->id)->first();
-            return view('admin.apikeys.getkey',compact('key'));
+            return view('admin.apikeys.getkey', compact('key'));
         } else {
             //notify()->error('Please login to get your key');
             return redirect()->route('login');
         }
     }
+
     public function createKey(Request $request)
     {
         $row = DB::table('api_keys')->where('user_id', '=', Auth::user()->id)->first();
         if ($row) {
             $key = DB::table('api_keys')
-              ->where('id', Auth::user()->id)
-              ->update(['secret_key' => (string) Str::uuid()]);
+                ->where('id', Auth::user()->id)
+                ->update(['secret_key' => (string)Str::uuid()]);
             //notify()->success('Key is re-generated successfully !');
             return back();
         } else {
             $key = DB::table('api_keys')->insert([
-                'secret_key' => (string) Str::uuid(),
+                'secret_key' => (string)Str::uuid(),
                 'user_id' => Auth::user()->id,
             ]);
             if ($key) {

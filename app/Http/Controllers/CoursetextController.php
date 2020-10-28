@@ -8,37 +8,34 @@ use DB;
 
 class CoursetextController extends Controller
 {
-   
+
     public function show()
     {
         $show = CourseText::first();
-        return view('admin.course_text.edit',compact('show'));
+        return view('admin.course_text.edit', compact('show'));
     }
 
     public function update(Request $request)
     {
 
-        $data = $this->validate($request,[
+        $data = $this->validate($request, [
             'heading' => 'required|max:50',
-            'sub_heading'=>'required|max:100',
+            'sub_heading' => 'required|max:100',
         ]);
 
-    	$data = CourseText::first();
+        $data = CourseText::first();
 
         $input = $request->all();
 
-        if(isset($data))
-        {
+        if (isset($data)) {
             $data->update($input);
-        }
-        else
-        {
+        } else {
             $data = CourseText::create($input);
-          
+
             $data->save();
         }
 
-		return back()->with('message',trans('flash.UpdatedSuccessfully'));
+        return back()->with('message', trans('flash.UpdatedSuccessfully'));
     }
 
 }

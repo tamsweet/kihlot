@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Announcement;
 use Illuminate\Http\Request;
-use App\User; 
+use App\User;
 use App\Course;
 use DB;
 use Session;
@@ -34,52 +34,49 @@ class AnnounsmentController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        $data = $this->validate($request,[
+        $data = $this->validate($request, [
             'announsment' => 'required',
         ]);
 
         $input = $request->all();
         $data = Announcement::create($input);
 
-        if(isset($request->status))
-        {
+        if (isset($request->status)) {
             $data->status = '1';
-        }
-        else
-        {
+        } else {
             $data->status = '0';
         }
 
         $data->save();
 
         Session::flash('success', trans('flash.AddedSuccessfully'));
-        return redirect()->route('course.show',$request->course_id);
+        return redirect()->route('course.show', $request->course_id);
     }
-    
+
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\announsment  $announsment
+     * @param \App\announsment $announsment
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
         $annou = Announcement::find($id);
-        $user =  User::all();
+        $user = User::all();
         $courses = Course::all();
-        return view('admin.course.announsment.edit',compact('annou','courses','user'));
+        return view('admin.course.announsment.edit', compact('annou', 'courses', 'user'));
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\announsment  $announsment
+     * @param \App\announsment $announsment
      * @return \Illuminate\Http\Response
      */
     public function edit(announsment $announsment)
@@ -90,8 +87,8 @@ class AnnounsmentController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\announsment  $announsment
+     * @param \Illuminate\Http\Request $request
+     * @param \App\announsment $announsment
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -99,12 +96,9 @@ class AnnounsmentController extends Controller
         $data = Announcement::findorfail($id);
         $input = $request->all();
 
-        if(isset($request->status))
-        {
+        if (isset($request->status)) {
             $input['status'] = '1';
-        }
-        else
-        {
+        } else {
             $input['status'] = '0';
         }
 
@@ -112,17 +106,18 @@ class AnnounsmentController extends Controller
 
         Session::flash('success', trans('flash.UpdatedSuccessfully'));
 
-        return redirect()->route('course.show',$request->course_id);
+        return redirect()->route('course.show', $request->course_id);
     }
+
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\announsment  $announsment
+     * @param \App\announsment $announsment
      * @return \Illuminate\Http\Response
      */
-    public function destroy( $id)
+    public function destroy($id)
     {
-        DB::table('announcements')->where('id',$id)->delete();
+        DB::table('announcements')->where('id', $id)->delete();
         return back();
     }
 }

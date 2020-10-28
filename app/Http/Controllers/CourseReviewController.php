@@ -10,7 +10,7 @@ class CourseReviewController extends Controller
 {
     public function index()
     {
-    	$course = Course::where('user_id', '!=' ,Auth::User()->id)->get();
-        return view('admin.course_review.index',compact('course'));
+        $course = Course::where('user_id', '!=', Auth::User()->id)->get();
+        return view('admin.course_review.index', compact('course'));
     }
 }

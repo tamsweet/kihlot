@@ -8,64 +8,61 @@ use Session;
 
 class TimeHistoryController extends Controller
 {
-    public function movie_time($endtime,$movie_id,$user_id)
+    public function movie_time($endtime, $movie_id, $user_id)
     {
-       
-        $timeold=$endtime;
-        if (strlen($endtime)<=5) {
 
-        	$endtime='00:'. $endtime;
+        $timeold = $endtime;
+        if (strlen($endtime) <= 5) {
 
-     	}
-  
-      
-       	$times= Session::get('time_'.$movie_id);
-       
-       	if (isset($times) && !is_null($times)) {
+            $endtime = '00:' . $endtime;
 
-           foreach ($times as $key => $value) {
-           $v[]=$value;
-           }
-          
-    	$coll=collect($v)->unique()->flatten();
-      
-
-     	if ($coll->contains($movie_id) && strtotime($times['endtime'])<=strtotime($timeold)) {
-
-        session()->put('time_'.$movie_id,[
-            'endtime' => $endtime,
-            'movie' => $movie_id,
-            'user' => $user_id,
-        ]);
-     
-     	}
-     	else
-     	{
-	        if (strtotime($times['endtime'])<=strtotime($timeold)) {
-	            session()->push('time_'.$movie_id,[
-		        'endtime' => $endtime,
-		        'movie' => $movie_id,
-		        'user' => $user_id,
-		    ]);
         }
-        
-     
-     	}
-  
-		}
-		else{
-		     if (strtotime($times['endtime'])<=strtotime($timeold)) {
-		            session()->put('time_'.$movie_id,[
-		        'endtime' => $endtime,
-		        'movie' => $movie_id,
-		        'user' => $user_id,
-		    ]);
+
+
+        $times = Session::get('time_' . $movie_id);
+
+        if (isset($times) && !is_null($times)) {
+
+            foreach ($times as $key => $value) {
+                $v[] = $value;
+            }
+
+            $coll = collect($v)->unique()->flatten();
+
+
+            if ($coll->contains($movie_id) && strtotime($times['endtime']) <= strtotime($timeold)) {
+
+                session()->put('time_' . $movie_id, [
+                    'endtime' => $endtime,
+                    'movie' => $movie_id,
+                    'user' => $user_id,
+                ]);
+
+            } else {
+                if (strtotime($times['endtime']) <= strtotime($timeold)) {
+                    session()->push('time_' . $movie_id, [
+                        'endtime' => $endtime,
+                        'movie' => $movie_id,
+                        'user' => $user_id,
+                    ]);
+                }
+
+
+            }
+
+        } else {
+            if (strtotime($times['endtime']) <= strtotime($timeold)) {
+                session()->put('time_' . $movie_id, [
+                    'endtime' => $endtime,
+                    'movie' => $movie_id,
+                    'user' => $user_id,
+                ]);
+            }
+
+            return 'put';
         }
-        
-     	return 'put';
-	}
- 
-}    
+
+    }
 
 
 }

@@ -11,16 +11,16 @@ class HelpController extends Controller
     public function faqstudentpage($id)
     {
 
-      	$data = FaqStudent::findorfail($id);
+        $data = FaqStudent::findorfail($id);
 
-	  	return view('front.help.faq_detail',compact('data')); 
+        return view('front.help.faq_detail', compact('data'));
     }
 
     public function faqinstructorpage($id)
     {
-    	
-	  	$data = FaqInstructor::findorfail($id);
 
-	  	return view('front.help.faq_detail',compact('data')); 
+        $data = FaqInstructor::findorfail($id);
+
+        return view('front.help.faq_detail', compact('data'));
     }
 }

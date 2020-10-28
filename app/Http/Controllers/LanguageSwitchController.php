@@ -11,7 +11,7 @@ class LanguageSwitchController extends Controller
 {
     public function languageSwitch($local)
     {
-    	Session::put('changed_language', $local);
-		return back();
+        Session::put('changed_language', $local);
+        return back();
     }
 }

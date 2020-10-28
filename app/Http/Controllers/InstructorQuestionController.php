@@ -14,58 +14,58 @@ class InstructorQuestionController extends Controller
 {
     public function index()
     {
-    	$questions = Question::where('instructor_id', Auth::User()->id)->get();
-    	return view('instructor.question.index',compact('questions' ));
+        $questions = Question::where('instructor_id', Auth::User()->id)->get();
+        return view('instructor.question.index', compact('questions'));
     }
 
     public function create()
     {
-    	$course = Course::where('user_id', Auth::User()->id)->get();
-        return view('instructor.question.add',compact("course"));
+        $course = Course::where('user_id', Auth::User()->id)->get();
+        return view('instructor.question.add', compact("course"));
     }
 
     public function store(Request $request)
     {
-        $data = $this->validate($request,[
+        $data = $this->validate($request, [
             'course_id' => 'required',
             'question' => 'required',
         ]);
 
         $input = $request->all();
         $data = Question::create($input);
-        $data->save(); 
+        $data->save();
 
-        Session::flash('success',trans('flash.AddedSuccessfully'));
+        Session::flash('success', trans('flash.AddedSuccessfully'));
         return redirect('instructorquestion');
     }
 
     public function show($id)
     {
         $que = Question::find($id);
-        $user =  User::all();
+        $user = User::all();
         $courses = Course::all();
-        return view('instructor.question.edit',compact('que','courses','user'));
+        return view('instructor.question.edit', compact('que', 'courses', 'user'));
     }
 
     public function update(Request $request, $id)
     {
-        $data = $this->validate($request,[
+        $data = $this->validate($request, [
             'question' => 'required',
         ]);
-        
+
         $data = Question::findorfail($id);
         $input = $request->all();
         $data->update($input);
 
-        Session::flash('success',trans('flash.UpdatedSuccessfully'));
+        Session::flash('success', trans('flash.UpdatedSuccessfully'));
         return redirect('instructorquestion');
 
     }
 
     public function destroy($id)
     {
-        Question::where('id',$id)->delete();
-        Answer::where('question_id',$id)->delete();
+        Question::where('id', $id)->delete();
+        Answer::where('question_id', $id)->delete();
         return back();
     }
 }

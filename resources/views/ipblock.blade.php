@@ -18,9 +18,12 @@
                     @endphp
 
                     @if($logo->logo_type == 'L')
-                        <a href="{{ url('/') }}" title="logo"><img src="{{ asset('images/logo/'.$logo->logo) }}" class="img-fluid" alt="logo"></a>
+                        <a href="{{ url('/') }}" title="logo"><img src="{{ asset('images/logo/'.$logo->logo) }}"
+                                                                   class="img-fluid" alt="logo"></a>
                     @else()
-                        <a href="{{ url('/') }}"><b><div class="logotext">{{ $logo->project_title }}</div></b></a>
+                        <a href="{{ url('/') }}"><b>
+                                <div class="logotext">{{ $logo->project_title }}</div>
+                            </b></a>
                     @endif
                 </div>
             </div>
@@ -29,23 +32,23 @@
 </section>
 
 <section id="ip-block" class="ip-block-main-block text-center">
-	<div class="container">
-		<div class="logout-device-block">
-			<div class="signup-block">
+    <div class="container">
+        <div class="logout-device-block">
+            <div class="signup-block">
 
-				<h2>IP BLOCKED</h2>
+                <h2>IP BLOCKED</h2>
 
 
-				@php
-					$ip = $_SERVER['REMOTE_ADDR'];
-				@endphp
+                @php
+                    $ip = $_SERVER['REMOTE_ADDR'];
+                @endphp
 
-				{{ $ip }}
-                
-                          
-		    </div>
-    	</div>
-	</div>
+                {{ $ip }}
+
+
+            </div>
+        </div>
+    </div>
 </section>
 <!--  Signup end-->
 <!-- jquery -->
@@ -53,7 +56,7 @@
 <!-- end jquery -->
 </body>
 <!-- body end -->
-</html> 
+</html>
 
 
 

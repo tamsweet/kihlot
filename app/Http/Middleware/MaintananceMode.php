@@ -11,8 +11,8 @@ class MaintananceMode
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
+     * @param \Illuminate\Http\Request $request
+     * @param \Closure $next
      * @return mixed
      */
     public function handle($request, Closure $next)
@@ -24,12 +24,9 @@ class MaintananceMode
 
         $ip_address = array();
 
-        if($comingsoon->enable == 1)
-        {
-            if(is_array($comingsoon['allowed_ip']) || is_object($comingsoon['allowed_ip'])) 
-            {
-                foreach($comingsoon->allowed_ip as $b)
-                {
+        if ($comingsoon->enable == 1) {
+            if (is_array($comingsoon['allowed_ip']) || is_object($comingsoon['allowed_ip'])) {
+                foreach ($comingsoon->allowed_ip as $b) {
                     array_push($ip_address, $b);
                 }
             }
@@ -39,19 +36,14 @@ class MaintananceMode
             $ip_address = array_flatten($ip_address);
 
 
-            
-            if(isset($ip_address) && in_array($ip, $ip_address))
-            {
+            if (isset($ip_address) && in_array($ip, $ip_address)) {
                 return $next($request);
-            }
-            else
-            {
+            } else {
                 return redirect()->route('comingsoon.show');
             }
-                
-            
-        }
-        else{
+
+
+        } else {
             return $next($request);
         }
     }

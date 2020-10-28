@@ -8,5 +8,5 @@ class RefundPolicy extends Model
 {
     protected $table = 'refund_policies';
 
-    protected $fillable = [ 'name', 'amount', 'days', 'detail', 'status'];
+    protected $fillable = ['name', 'amount', 'days', 'detail', 'status'];
 }

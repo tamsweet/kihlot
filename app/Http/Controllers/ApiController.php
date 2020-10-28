@@ -223,7 +223,7 @@ class ApiController extends Controller
                 $env = preg_split('/\s+/', $env);
 
                 // Loop through given data
-                foreach ((array) $data as $key => $value) {
+                foreach ((array)$data as $key => $value) {
                     // Loop through .env-data
                     foreach ($env as $env_key => $env_value) {
                         // Turn the value into an array and stop after the first split

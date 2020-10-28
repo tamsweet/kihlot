@@ -10,109 +10,90 @@ class PlayerSettingController extends Controller
 {
     public function get()
     {
-    	$ps = PlayerSetting::first();
-    	return view('admin.playersetting.edit',compact('ps'));
+        $ps = PlayerSetting::first();
+        return view('admin.playersetting.edit', compact('ps'));
     }
 
     public function update(Request $request)
     {
-      
-      $request->validate([
-          'logo' => 'mimes:png'
-      ]);
 
-      $ps = PlayerSetting::first();
+        $request->validate([
+            'logo' => 'mimes:png'
+        ]);
 
-      $input = $request->all();
+        $ps = PlayerSetting::first();
 
-        if(isset($ps))
-        {
+        $input = $request->all();
+
+        if (isset($ps)) {
             $ps->cpy_text = $request->cpy_text;
-      
 
-            if(isset($request->logo_enable))
-              {
+
+            if (isset($request->logo_enable)) {
                 $ps->logo_enable = 1;
-              }
-              else
-              {
+            } else {
                 $ps->logo_enable = 0;
-              }
+            }
 
-              if(isset($request->share_enable))
-              {
+            if (isset($request->share_enable)) {
                 $ps->share_enable = 1;
-              }
-              else
-              {
+            } else {
                 $ps->share_enable = 0;
-              }
-              
+            }
 
-              if(isset($request->autoplay))
-              {
+
+            if (isset($request->autoplay)) {
                 $ps->autoplay = 1;
-              }
-              else
-              {
+            } else {
                 $ps->autoplay = 0;
-              }
+            }
 
-              if(isset($request->download))
-              {
+            if (isset($request->download)) {
                 $ps->download = 1;
-              }
-              else
-              {
+            } else {
                 $ps->download = 0;
-              }
+            }
 
 
-            
-              if($file = $request->file('logo'))
-              {
+            if ($file = $request->file('logo')) {
 
-                  $name = 'logo.png';
+                $name = 'logo.png';
 
-                  if($ps->logo !="")
-                  {
-                    $content = @file_get_contents(public_path().'/content/minimal_skin_dark/'.$ps->logo);
+                if ($ps->logo != "") {
+                    $content = @file_get_contents(public_path() . '/content/minimal_skin_dark/' . $ps->logo);
 
-                      if($content) {
-                        unlink(public_path().'/content/minimal_skin_dark/'.$ps->logo);
-                      }
-                  }
-
-                  $file->move('content/minimal_skin_dark', $name);
-                  
-                  $ps->logo = $name;
-
+                    if ($content) {
+                        unlink(public_path() . '/content/minimal_skin_dark/' . $ps->logo);
+                    }
                 }
-            
+
+                $file->move('content/minimal_skin_dark', $name);
+
+                $ps->logo = $name;
+
+            }
+
             $ps->save();
-        }
-        else
-        {
-            
-              if ($file = $request->file('logo'))
-                {
+        } else {
 
-                  $name = 'logo.png';
+            if ($file = $request->file('logo')) {
 
-                  $optimizeImage = Image::make($file);
-                  $optimizePath = public_path().'/content/minimal_skin_dark/';
-                  $image = time().$file->getClientOriginalName();
-                  $optimizeImage->save($optimizePath.$image, 72);
-                  $input['logo'] = $name;
+                $name = 'logo.png';
 
-                }
-            
+                $optimizeImage = Image::make($file);
+                $optimizePath = public_path() . '/content/minimal_skin_dark/';
+                $image = time() . $file->getClientOriginalName();
+                $optimizeImage->save($optimizePath . $image, 72);
+                $input['logo'] = $name;
+
+            }
+
 
             $ps = PlayerSetting::create($input);
-          
+
             $ps->save();
         }
-    	
-    	 return back()->with('success',trans('flash.UpdatedSuccessfully'));
+
+        return back()->with('success', trans('flash.UpdatedSuccessfully'));
     }
 }

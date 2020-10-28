@@ -25,7 +25,8 @@ use App\Coupon;
 
 class PaymentController extends Controller
 {
-    public function paystore(Request $request){
+    public function paystore(Request $request)
+    {
 
         $validator = Validator::make($request->all(), [
             'secret' => 'required',
@@ -44,48 +45,37 @@ class PaymentController extends Controller
         $auth = Auth::user();
 
         $currency = Currency::first();
-            
+
         $carts = Cart::where('user_id', $auth->id)->get();
 
 
-        if($request->pay_status == 1) {
-           
-            foreach($carts as $cart)
-            {
-                if ($cart->offer_price != 0)
-                {
-                    $pay_amount =  $cart->offer_price;
-                }
-                else
-                {
-                    $pay_amount =  $cart->price;
+        if ($request->pay_status == 1) {
+
+            foreach ($carts as $cart) {
+                if ($cart->offer_price != 0) {
+                    $pay_amount = $cart->offer_price;
+                } else {
+                    $pay_amount = $cart->price;
                 }
 
-                if ($cart->disamount != 0 || $cart->disamount != NULL)
-                {
-                    $cpn_discount =  $cart->disamount;
-                }
-                else
-                {
-                    $cpn_discount =  '';
+                if ($cart->disamount != 0 || $cart->disamount != NULL) {
+                    $cpn_discount = $cart->disamount;
+                } else {
+                    $cpn_discount = '';
                 }
 
 
                 $lastOrder = Order::orderBy('created_at', 'desc')->first();
 
-                if ( ! $lastOrder )
-                {
+                if (!$lastOrder) {
                     // We get here if there is no order at all
                     // If there is no number set it to 0, which will be 1 at the end.
                     $number = 0;
-                }
-                else
-                { 
+                } else {
                     $number = substr($lastOrder->order_id, 3);
                 }
 
-                if($cart->type == 1)
-                {
+                if ($cart->type == 1) {
                     $bundle_id = $cart->bundle_id;
                     $bundle_course_id = $cart->bundle->course_id;
                     $course_id = NULL;
@@ -94,34 +84,26 @@ class PaymentController extends Controller
                     $todayDate = NULL;
                     $expireDate = NULL;
                     $instructor_id = $cart->bundle->user_id;
-                }
-                else{
+                } else {
 
 
-                    if($cart->courses->duration_type == "m")
-                    {
-                        
-                        if($cart->courses->duration != NULL && $cart->courses->duration !='')
-                        {
+                    if ($cart->courses->duration_type == "m") {
+
+                        if ($cart->courses->duration != NULL && $cart->courses->duration != '') {
                             $days = $cart->courses->duration * 30;
                             $todayDate = date('Y-m-d');
                             $expireDate = date("Y-m-d", strtotime("$todayDate +$days days"));
-                        }
-                        else{
+                        } else {
                             $todayDate = NULL;
                             $expireDate = NULL;
                         }
-                    }
-                    else
-                    {
+                    } else {
 
-                        if($cart->courses->duration != NULL && $cart->courses->duration !='')
-                        {
+                        if ($cart->courses->duration != NULL && $cart->courses->duration != '') {
                             $days = $cart->courses->duration;
                             $todayDate = date('Y-m-d');
                             $expireDate = date("Y-m-d", strtotime("$todayDate +$days days"));
-                        }
-                        else{
+                        } else {
                             $todayDate = NULL;
                             $expireDate = NULL;
                         }
@@ -131,31 +113,22 @@ class PaymentController extends Controller
 
                     $setting = InstructorSetting::first();
 
-                    if($cart->courses->instructor_revenue != NULL)
-                    {
+                    if ($cart->courses->instructor_revenue != NULL) {
                         $x_amount = $pay_amount * $cart->courses->instructor_revenue;
                         $instructor_payout = $x_amount / 100;
-                    }
-                    else
-                    {
+                    } else {
 
-                        if(isset($setting))
-                        {
-                            if($cart->courses->user->role == "instructor")
-                            {
+                        if (isset($setting)) {
+                            if ($cart->courses->user->role == "instructor") {
                                 $x_amount = $pay_amount * $setting->instructor_revenue;
                                 $instructor_payout = $x_amount / 100;
-                            }
-                            else
-                            {
+                            } else {
                                 $instructor_payout = 0;
                             }
-                            
-                        }
-                        else
-                        {
+
+                        } else {
                             $instructor_payout = 0;
-                        }  
+                        }
                     }
 
                     $bundle_id = NULL;
@@ -165,104 +138,95 @@ class PaymentController extends Controller
                     $instructor_id = $cart->courses->user_id;
                 }
 
-                if($request->payment_method == 'paypal')
-                {
+                if ($request->payment_method == 'paypal') {
                     $saleId = $request->sale_id;
-                }
-                else{
+                } else {
 
                     $saleId = NULL;
                 }
-                    
+
                 $created_order = Order::create([
 
-                    'course_id' => $course_id,
-                    'user_id' => $auth->id,
-                    'instructor_id' => $instructor_id,
-                    'order_id' => '#' . sprintf("%08d", intval($number) + 1),
-                    'transaction_id' => $request->transaction_id,
-                    'payment_method' => $request->payment_method,
-                    'total_amount' => $pay_amount,
-                    'coupon_discount' => $cpn_discount,
-                    'currency' => $currency->currency,
-                    'currency_icon' => $currency->icon,
-                    'duration' => $duration,
-                    'enroll_start' => $todayDate,
-                    'enroll_expire' => $expireDate,
-                    'bundle_id' => $bundle_id,
-                    'bundle_course_id' => $bundle_course_id,
-                    'sale_id' => $saleId,
-                    'created_at'  => \Carbon\Carbon::now()->toDateTimeString(),
+                        'course_id' => $course_id,
+                        'user_id' => $auth->id,
+                        'instructor_id' => $instructor_id,
+                        'order_id' => '#' . sprintf("%08d", intval($number) + 1),
+                        'transaction_id' => $request->transaction_id,
+                        'payment_method' => $request->payment_method,
+                        'total_amount' => $pay_amount,
+                        'coupon_discount' => $cpn_discount,
+                        'currency' => $currency->currency,
+                        'currency_icon' => $currency->icon,
+                        'duration' => $duration,
+                        'enroll_start' => $todayDate,
+                        'enroll_expire' => $expireDate,
+                        'bundle_id' => $bundle_id,
+                        'bundle_course_id' => $bundle_course_id,
+                        'sale_id' => $saleId,
+                        'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
                     ]
                 );
 
-                Wishlist::where('user_id',$auth->id)->where('course_id', $cart->course_id)->delete();
+                Wishlist::where('user_id', $auth->id)->where('course_id', $cart->course_id)->delete();
 
-                Cart::where('user_id',$auth->id)->where('course_id', $cart->course_id)->delete();
+                Cart::where('user_id', $auth->id)->where('course_id', $cart->course_id)->delete();
 
-                if($instructor_payout != 0)
-                {
-                    if($created_order)
-                    {
-                        if($cart->type == 0)
-                        {
-                            if($cart->courses->user->role == "instructor")
-                            {
+                if ($instructor_payout != 0) {
+                    if ($created_order) {
+                        if ($cart->type == 0) {
+                            if ($cart->courses->user->role == "instructor") {
 
                                 $created_payout = PendingPayout::create([
-                                    'user_id' => $cart->courses->user_id,
-                                    'course_id' => $cart->course_id,
-                                    'order_id' => $created_order->id,
-                                    'transaction_id' => $request->transaction_id,
-                                    'total_amount' => $pay_amount,
-                                    'currency' => $currency->currency,
-                                    'currency_icon' => $currency->icon,
-                                    'instructor_revenue' => $instructor_payout,
-                                    'created_at'  => \Carbon\Carbon::now()->toDateTimeString(),
-                                    'updated_at'  => \Carbon\Carbon::now()->toDateTimeString(),
+                                        'user_id' => $cart->courses->user_id,
+                                        'course_id' => $cart->course_id,
+                                        'order_id' => $created_order->id,
+                                        'transaction_id' => $request->transaction_id,
+                                        'total_amount' => $pay_amount,
+                                        'currency' => $currency->currency,
+                                        'currency_icon' => $currency->icon,
+                                        'instructor_revenue' => $instructor_payout,
+                                        'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
+                                        'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
                                     ]
                                 );
                             }
                         }
                     }
                 }
-                
 
-                if($created_order){
-                    try{
-                        
+
+                if ($created_order) {
+                    try {
+
                         /*sending email*/
                         $x = 'You are successfully enrolled in a course';
                         $order = $created_order;
                         Mail::to(Auth::User()->email)->send(new SendOrderMail($x, $order));
 
 
-                    }catch(\Swift_TransportException $e){
-                        Session::flash('deleted',trans('flash.PaymentMailError'));
+                    } catch (\Swift_TransportException $e) {
+                        Session::flash('deleted', trans('flash.PaymentMailError'));
                         return redirect('/');
                     }
                 }
 
-                if($cart->type == 0)
-                {
+                if ($cart->type == 0) {
 
-                    if($created_order){
+                    if ($created_order) {
                         // Notification when user enroll
                         $cor = Course::where('id', $cart->course_id)->first();
 
                         $course = [
-                          'title' => $cor->title,
-                          'image' => $cor->preview_image,
+                            'title' => $cor->title,
+                            'image' => $cor->preview_image,
                         ];
 
                         $enroll = Order::where('course_id', $cart->course_id)->get();
 
-                        if(!$enroll->isEmpty())
-                        {
-                            foreach($enroll as $enrol)
-                            {
+                        if (!$enroll->isEmpty()) {
+                            foreach ($enroll as $enrol) {
                                 $user = User::where('id', $enrol->user_id)->get();
-                                Notification::send($user,new UserEnroll($course));
+                                Notification::send($user, new UserEnroll($course));
                             }
                         }
                     }
@@ -270,22 +234,20 @@ class PaymentController extends Controller
 
                 return response()->json('Payment Successfull !', 200);
 
-            } 
+            }
 
-        }
-        else{
+        } else {
 
             return response()->json('Payment Failed !', 401);
 
         }
-                    
-                
-              
+
+
     }
 
 
-
-    public function purchasehistory(Request $request){
+    public function purchasehistory(Request $request)
+    {
 
         $validator = Validator::make($request->all(), [
             'secret' => 'required',
@@ -305,7 +267,7 @@ class PaymentController extends Controller
 
         $enroll = Order::where('user_id', $user->id)->where('status', 1)->with('courses')->get();
 
-        return response()->json(array('orderhistory' =>$enroll), 200);      
+        return response()->json(array('orderhistory' => $enroll), 200);
     }
 
 
@@ -326,42 +288,42 @@ class PaymentController extends Controller
             return response()->json(['Invalid Secret Key !']);
         }
 
-        
-        $stripekey =  env('STRIPE_KEY');
+
+        $stripekey = env('STRIPE_KEY');
         $stripesecret = env('STRIPE_SECRET');
 
-        $paypal_client_id =  env('PAYPAL_CLIENT_ID');
+        $paypal_client_id = env('PAYPAL_CLIENT_ID');
         $paypal_secret = env('PAYPAL_SECRET');
-        $paypal_mode =  env('PAYPAL_MODE');
+        $paypal_mode = env('PAYPAL_MODE');
 
-        $instamojo_api_key =  env('IM_API_KEY');
+        $instamojo_api_key = env('IM_API_KEY');
         $instamojo_auth_token = env('IM_AUTH_TOKEN');
-        $instamojo_url =  env('IM_URL');
+        $instamojo_url = env('IM_URL');
 
-        $razorpay_key =  env('RAZORPAY_KEY');
+        $razorpay_key = env('RAZORPAY_KEY');
         $razorpay_secret = env('RAZORPAY_SECRET');
 
-        $paystack_public_key =  env('PAYSTACK_PUBLIC_KEY');
+        $paystack_public_key = env('PAYSTACK_PUBLIC_KEY');
         $paystack_secret = env('PAYSTACK_SECRET_KEY');
-        $paystack_pay_url =  env('PAYSTACK_PAYMENT_URL');
-        $paystack_merchant_email =  env('PAYSTACK_MERCHANT_EMAIL');
+        $paystack_pay_url = env('PAYSTACK_PAYMENT_URL');
+        $paystack_merchant_email = env('PAYSTACK_MERCHANT_EMAIL');
 
         $paytm_enviroment = env('PAYTM_ENVIRONMENT');
-        $paytm_merchant_id =  env('PAYTM_MERCHANT_ID');
-        $paytm_merchant_key =  env('PAYTM_MERCHANT_KEY');
+        $paytm_merchant_id = env('PAYTM_MERCHANT_ID');
+        $paytm_merchant_key = env('PAYTM_MERCHANT_KEY');
         $paytm_merchant_website = env('PAYTM_MERCHANT_WEBSITE');
-        $paytm_channel =  env('PAYTM_CHANNEL');
-        $paytm_industry_type =  env('PAYTM_INDUSTRY_TYPE');
+        $paytm_channel = env('PAYTM_CHANNEL');
+        $paytm_industry_type = env('PAYTM_INDUSTRY_TYPE');
 
 
         $bank_details = BankTransfer::first();
 
-        
+
         return response()->json(array(
-            'stripekey' => $stripekey, 
-            'stripesecret' => $stripesecret, 
-            'paypal_client_id' => $paypal_client_id, 
-            'paypal_secret' => $paypal_secret, 
+            'stripekey' => $stripekey,
+            'stripesecret' => $stripesecret,
+            'paypal_client_id' => $paypal_client_id,
+            'paypal_secret' => $paypal_secret,
             'paypal_mode' => $paypal_mode,
             'instamojo_api_key' => $instamojo_api_key,
             'instamojo_auth_token' => $instamojo_auth_token,
@@ -379,12 +341,10 @@ class PaymentController extends Controller
             'paytm_channel' => $paytm_channel,
             'paytm_industry_type' => $paytm_industry_type,
             'bank_details' => $bank_details,
-              ), 200);
-        
-        
-        
-    }
+        ), 200);
 
+
+    }
 
 
 }

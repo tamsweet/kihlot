@@ -21,6 +21,7 @@
     </section>
     <!-- categories-tab end-->
 
+    <!-- home start -->
     @if(isset($sliders))
         <section id="home-background-slider" class="background-slider-block owl-carousel">
             <div class="item home-slider-img">
@@ -47,10 +48,9 @@
             </div>
         </section>
     @endif
-
     <!-- home end -->
-    <!-- learning-work start -->
 
+    <!-- learning-work start -->
     @if(isset($facts))
         <section id="learning-work" class="learning-work-main-block">
             <div class="container">
@@ -79,6 +79,7 @@
         </section>
     @endif
     <!-- learning-work end -->
+
     <!-- Student start -->
     @if(Auth::check())
         @php
@@ -342,6 +343,7 @@
         </section>
     @endif
     <!-- learning-courses end -->
+
     <!-- Student start -->
     <section id="student" class="student-main-block">
         <div class="container">
@@ -1104,8 +1106,8 @@
         @endif
     </section>
     <!-- recommendations end -->
-    <!-- categories start -->
 
+    <!-- categories start -->
     @if(!$category->isEmpty())
 
         <section id="categories" class="categories-main-block">
@@ -1144,8 +1146,8 @@
 
 
     @endif
-
     <!-- categories end -->
+
     <!-- testimonial start -->
     @php
         $testi = App\Testimonial::all();

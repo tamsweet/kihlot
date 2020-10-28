@@ -10,11 +10,12 @@ class State extends Model
 
     public function country()
     {
-    	return $this->belongsTo('App\Country','country_id', 'country_id');
+        return $this->belongsTo('App\Country', 'country_id', 'country_id');
     }
 
-    public function city(){
+    public function city()
+    {
 
-    	return $this->hasMany('App\City','state_id');
+        return $this->hasMany('App\City', 'state_id');
     }
 }

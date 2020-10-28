@@ -25,8 +25,8 @@ class SliderController extends Controller
 
     public function index()
     {
-        $sliders = Slider::orderBy('position','ASC')->get();
-        return view("admin.slider.index",compact("sliders"));
+        $sliders = Slider::orderBy('position', 'ASC')->get();
+        return view("admin.slider.index", compact("sliders"));
     }
 
     /**
@@ -43,123 +43,119 @@ class SliderController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        
-        $data = $this->validate($request,[
+
+        $data = $this->validate($request, [
             'heading' => 'required',
             'sub_heading' => 'required',
             'search_text' => 'required',
             'detail' => 'required',
-            'image'=>'required',
+            'image' => 'required',
         ]);
 
 
         $input = $request->all();
 
-        if($file = $request->file('image')) 
-        {        
-          $optimizeImage = Image::make($file);
-          $optimizePath = public_path().'/images/slider/';
-          $image = time().$file->getClientOriginalName();
-          $optimizeImage->save($optimizePath.$image, 72);
+        if ($file = $request->file('image')) {
+            $optimizeImage = Image::make($file);
+            $optimizePath = public_path() . '/images/slider/';
+            $image = time() . $file->getClientOriginalName();
+            $optimizeImage->save($optimizePath . $image, 72);
 
-          $input['image'] = $image;
-          
+            $input['image'] = $image;
+
         }
 
 
-        $input['position'] = (Slider::count()+1);
+        $input['position'] = (Slider::count() + 1);
 
-        $input['status'] = isset($request->status)  ? 1 : 0;
-        $input['left'] = isset($request->left)  ? 1 : 0;
-       
+        $input['status'] = isset($request->status) ? 1 : 0;
+        $input['left'] = isset($request->left) ? 1 : 0;
+
 
         $data = Slider::create($input);
 
 
-        
         $data->save();
 
-        Session::flash('success',trans('flash.AddedSuccessfully'));
+        Session::flash('success', trans('flash.AddedSuccessfully'));
         return redirect('slider');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\slider  $slider
+     * @param \App\slider $slider
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
         $cate = Slider::find($id);
-        return view('admin.slider.update',compact('cate'));
-   
+        return view('admin.slider.update', compact('cate'));
+
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\slider  $slider
+     * @param \App\slider $slider
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
-      //
+        //
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\slider  $slider
+     * @param \Illuminate\Http\Request $request
+     * @param \App\slider $slider
      * @return \Illuminate\Http\Response
      */
 
-    public function update(Request $request,$id)
+    public function update(Request $request, $id)
     {
 
         $slider = Slider::findorfail($id);
 
         $input = $request->all();
 
-        if($file = $request->file('image'))
-        {
-            if($slider->image != null) {
-                $content = @file_get_contents(public_path().'/images/slider/'.$slider->image);
+        if ($file = $request->file('image')) {
+            if ($slider->image != null) {
+                $content = @file_get_contents(public_path() . '/images/slider/' . $slider->image);
                 if ($content) {
-                  unlink(public_path().'/images/slider/'.$slider->image);
+                    unlink(public_path() . '/images/slider/' . $slider->image);
                 }
             }
 
             $optimizeImage = Image::make($file);
-            $optimizePath = public_path().'/images/slider/';
-            $image = time().$file->getClientOriginalName();
-            $optimizeImage->save($optimizePath.$image, 72);
+            $optimizePath = public_path() . '/images/slider/';
+            $image = time() . $file->getClientOriginalName();
+            $optimizeImage->save($optimizePath . $image, 72);
 
             $input['image'] = $image;
         }
 
-        $input['status'] = isset($request->status)  ? 1 : 0;
-        $input['left'] = isset($request->left)  ? 1 : 0;
+        $input['status'] = isset($request->status) ? 1 : 0;
+        $input['left'] = isset($request->left) ? 1 : 0;
 
-       
 
         $slider->update($input);
 
-        Session::flash('success',trans('flash.UpdatedSuccessfully'));
-        return redirect('slider'); 
-     
+        Session::flash('success', trans('flash.UpdatedSuccessfully'));
+        return redirect('slider');
+
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\slider  $slider
+     * @param \App\slider $slider
      * @return \Illuminate\Http\Response
      */
 
@@ -167,22 +163,19 @@ class SliderController extends Controller
     {
         $cate = Slider::find($id);
 
-        if ($cate->image != null)
-        {
-                
-            $image_file = @file_get_contents(public_path().'/images/slider/'.$cate->image);
+        if ($cate->image != null) {
 
-            if($image_file)
-            {
-                unlink(public_path().'/images/slider/'.$cate->image);
+            $image_file = @file_get_contents(public_path() . '/images/slider/' . $cate->image);
+
+            if ($image_file) {
+                unlink(public_path() . '/images/slider/' . $cate->image);
             }
         }
-        
+
         $value = $cate->delete();
 
-        if($value)
-        {
-            session()->flash('delete',trans('flash.DeletedSuccessfully'));
+        if ($value) {
+            session()->flash('delete', trans('flash.DeletedSuccessfully'));
             return redirect('slider');
         }
 
@@ -191,19 +184,19 @@ class SliderController extends Controller
     public function reposition(Request $request)
     {
 
-        $data= $request->all();
-        
+        $data = $request->all();
+
         $posts = Slider::all();
         $pos = $data['id'];
-       
-        $position =json_encode($data);
-     
-        foreach($posts as $key => $item) {
-            
+
+        $position = json_encode($data);
+
+        foreach ($posts as $key => $item) {
+
             Slider::where('id', $item->id)->update(array('position' => $pos[$key]));
         }
 
-        return response()->json(['msg'=>'Updated Successfully', 'success'=>true]);
+        return response()->json(['msg' => 'Updated Successfully', 'success' => true]);
 
 
     }

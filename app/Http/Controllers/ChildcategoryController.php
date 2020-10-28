@@ -17,7 +17,7 @@ class ChildcategoryController extends Controller
     {
         return $this->middleware('auth');
     }
-    
+
     /**
      * Display a listing of the resource.
      *
@@ -26,7 +26,7 @@ class ChildcategoryController extends Controller
     public function index()
     {
         $childcategory = ChildCategory::all();
-        return view('admin.category.childcategory.index',compact("childcategory"));
+        return view('admin.category.childcategory.index', compact("childcategory"));
     }
 
     /**
@@ -38,62 +38,59 @@ class ChildcategoryController extends Controller
     {
         $category = Categories::all();
         $childcategory = SubCategory::all();
-        return view('admin.category.childcategory.insert',compact('category','childcategory')); 
+        return view('admin.category.childcategory.insert', compact('category', 'childcategory'));
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        $data = $this->validate($request,[
-            "title"=>"required|unique:child_categories,title",
-            "title.required"=>"Please enter category title !",
+        $data = $this->validate($request, [
+            "title" => "required|unique:child_categories,title",
+            "title.required" => "Please enter category title !",
             "title.unique" => "This Category name is already exist !"
         ]);
 
         $input = $request->all();
         $input['subcategory_id'] = $request->subcategories;
 
-        $slug = str_slug($input['title'],'-');
+        $slug = str_slug($input['title'], '-');
         $input['slug'] = $slug;
 
         $data = ChildCategory::create($input);
 
-        if(isset($request->status))
-        {
+        if (isset($request->status)) {
             $data->status = '1';
-        }
-        else
-        {
+        } else {
             $data->status = '0';
         }
 
         $data->save();
 
-        return redirect ('childcategory');
-    
+        return redirect('childcategory');
+
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\childcategory  $childcategory
+     * @param \App\childcategory $childcategory
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
         $cate = ChildCategory::find($id);
-        return view('admin.category.childcategory.edit',compact('cate'));
+        return view('admin.category.childcategory.edit', compact('cate'));
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\childcategory  $childcategory
+     * @param \App\childcategory $childcategory
      * @return \Illuminate\Http\Response
      */
     public function edit(childcategory $childcategory)
@@ -104,67 +101,61 @@ class ChildcategoryController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\childcategory  $childcategory
+     * @param \Illuminate\Http\Request $request
+     * @param \App\childcategory $childcategory
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request,$id)
+    public function update(Request $request, $id)
     {
-        $data = $this->validate($request,[
-            "title"=>"required|unique:child_categories,title",
-            "title.required"=>"Please enter category title !",
+        $data = $this->validate($request, [
+            "title" => "required|unique:child_categories,title",
+            "title.required" => "Please enter category title !",
             "title.unique" => "This Category name is already exist !"
         ]);
 
         $data = ChildCategory::findorfail($id);
         $input = $request->all();
 
-        
-        $slug = str_slug($input['title'],'-');
+
+        $slug = str_slug($input['title'], '-');
         $input['slug'] = $slug;
 
-        if(isset($request->status))
-        {
+        if (isset($request->status)) {
             $input['status'] = '1';
-        }
-        else
-        {
+        } else {
             $input['status'] = '0';
         }
 
-        
+
         $data->update($input);
-        Session::flash('success',trans('flash.UpdatedSuccessfully'));
+        Session::flash('success', trans('flash.UpdatedSuccessfully'));
 
 
-        return redirect ('childcategory');
-  
+        return redirect('childcategory');
+
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\childcategory  $childcategory
+     * @param \App\childcategory $childcategory
      * @return \Illuminate\Http\Response
      */
 
     public function destroy($id)
     {
-        if(Auth::User()->role == "admin"){
+        if (Auth::User()->role == "admin") {
 
             $course = Course::where('childcategory_id', $id)->get();
 
-            if(!$course->isEmpty())
-            {
-                return back()->with('delete',trans('flash.CannotDeleteCategory'));
-            }
-            else
-            {
-                DB::table('child_categories')->where('id',$id)->delete();
-                return back()->with('delete',trans('flash.DeletedSuccessfully'));
+            if (!$course->isEmpty()) {
+                return back()->with('delete', trans('flash.CannotDeleteCategory'));
+            } else {
+                DB::table('child_categories')->where('id', $id)->delete();
+                return back()->with('delete', trans('flash.DeletedSuccessfully'));
             }
         }
-     
+
         return redirect('childcategory');
     }
 }

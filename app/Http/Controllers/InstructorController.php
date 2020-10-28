@@ -11,17 +11,13 @@ class InstructorController extends Controller
 {
 
     public function index()
-    {   
-        if(Auth::User()->role == "instructor")
-        {
+    {
+        if (Auth::User()->role == "instructor") {
             return view('instructor.dashboard');
-        }
-        else
-        {
-            return back()->with('success',trans('flash.NotFound'));
+        } else {
+            return back()->with('success', trans('flash.NotFound'));
         }
     }
 
 
-	
 }

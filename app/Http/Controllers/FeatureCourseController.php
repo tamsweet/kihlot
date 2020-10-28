@@ -16,6 +16,7 @@ use Validator;
 use URL;
 
 /** All Paypal Details class **/
+
 use PayPal\Rest\ApiContext;
 use PayPal\Auth\OAuthTokenCredential;
 use PayPal\Api\Amount;
@@ -33,13 +34,13 @@ use App\Setting;
 
 class FeatureCourseController extends Controller
 {
-     public function __construct()
+    public function __construct()
     {
         /** PayPal api context **/
         $paypal_conf = \Config::get('paypal');
         $this->_api_context = new ApiContext(new OAuthTokenCredential(
-            $paypal_conf['client_id'],
-            $paypal_conf['secret'])
+                $paypal_conf['client_id'],
+                $paypal_conf['secret'])
         );
         $this->_api_context->setConfig($paypal_conf['settings']);
     }
@@ -69,18 +70,18 @@ class FeatureCourseController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
         $created_order = FeatureCourse::create([
-            'course_id' => $request->course_id,
-            'user_id' => Auth::User()->id,
-            'total_amount' => $request->total_amount,
-            'created_at'  => \Carbon\Carbon::now()->toDateTimeString(),
+                'course_id' => $request->course_id,
+                'user_id' => Auth::User()->id,
+                'total_amount' => $request->total_amount,
+                'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
             ]
-        );  
+        );
 
         $payment = $request;
         $course = Course::where('id', $request->course_id)->first();
@@ -90,7 +91,7 @@ class FeatureCourseController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -102,7 +103,7 @@ class FeatureCourseController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -113,8 +114,8 @@ class FeatureCourseController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -125,13 +126,13 @@ class FeatureCourseController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-       FeaturePayment::where('id', $id)->delete();
-       return Redirect::route('featurecourse.index');
+        FeaturePayment::where('id', $id)->delete();
+        return Redirect::route('featurecourse.index');
     }
 
     public function order(Request $request)
@@ -141,12 +142,12 @@ class FeatureCourseController extends Controller
 
         $payment = PaytmWallet::with('receive');
         $payment->prepare([
-          'order' => str_random(32),
-          'user' => Auth::User()->id,
-          'mobile_number' => $request->mobile,
-          'email' => $request->email,
-          'amount' => $request->amount,
-          'callback_url' => $appurl."/featurepayment/status" 
+            'order' => str_random(32),
+            'user' => Auth::User()->id,
+            'mobile_number' => $request->mobile,
+            'email' => $request->email,
+            'amount' => $request->amount,
+            'callback_url' => $appurl . "/featurepayment/status"
         ]);
         return $payment->receive();
     }
@@ -164,106 +165,106 @@ class FeatureCourseController extends Controller
 
         $response = $transaction->response();
         $order_id = $transaction->getOrderId();
-        
 
-        if($transaction->isSuccessful()){
-            
+
+        if ($transaction->isSuccessful()) {
+
             $currency = Currency::first();
 
-            $feature = FeatureCourse::where('user_id',Auth::User()->id)->first();
-           
-                       
-            $created_order = FeaturePayment::create([
-                'course_id' => $feature->course_id,
-                'user_id' => Auth::User()->id,
-                'transaction_id' => $response['TXNID'],
-                'payment_method' => 'PayTM',
-                'total_amount' => $response['TXNAMOUNT'],
-                'currency' => $response['CURRENCY'],
-                'currency_icon' => $currency->icon,
-                'created_at'  => \Carbon\Carbon::now()->toDateTimeString(),
-                ]
-            );  
-              
+            $feature = FeatureCourse::where('user_id', Auth::User()->id)->first();
 
-            if($created_order){
+
+            $created_order = FeaturePayment::create([
+                    'course_id' => $feature->course_id,
+                    'user_id' => Auth::User()->id,
+                    'transaction_id' => $response['TXNID'],
+                    'payment_method' => 'PayTM',
+                    'total_amount' => $response['TXNAMOUNT'],
+                    'currency' => $response['CURRENCY'],
+                    'currency_icon' => $currency->icon,
+                    'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
+                ]
+            );
+
+
+            if ($created_order) {
 
                 Course::where('id', '=', $feature->course_id)->where('user_id', '=', Auth::user()->id)->update(['featured' => '1']);
 
-                $feature = FeatureCourse::where('user_id',Auth::User()->id)->delete();
-            } 
-         
+                $feature = FeatureCourse::where('user_id', Auth::User()->id)->delete();
+            }
+
 
             \Session::flash('success', trans('flash.PaymentSuccess'));
 
             return Redirect::route('featurecourse.index');
 
 
-        }else if($transaction->isFailed()){
-        
-          \Session::flash('delete', trans('flash.PaymentFailed'));
+        } else if ($transaction->isFailed()) {
+
+            \Session::flash('delete', trans('flash.PaymentFailed'));
             return Redirect::route('featurecourse.index');
         }
 
     }
 
 
-
     public function payWithpaypal(Request $request)
-    {   
+    {
         // return $request;
         $pay = Crypt::decrypt($request->amount);
-        Session::put('payment',$pay);
+        Session::put('payment', $pay);
         $payer = new Payer();
-                $payer->setPaymentMethod('paypal');
+        $payer->setPaymentMethod('paypal');
         $item_1 = new Item();
-        $item_1->setName('Item 1') /** item name **/
-                    ->setCurrency('USD')
-                    ->setQuantity(1)
-                    ->setPrice($pay); /** unit price **/
+        $item_1->setName('Item 1')/** item name **/
+        ->setCurrency('USD')
+            ->setQuantity(1)
+            ->setPrice($pay);
+        /** unit price **/
         $item_list = new ItemList();
-                $item_list->setItems(array($item_1));
+        $item_list->setItems(array($item_1));
         $amount = new Amount();
-                $amount->setCurrency('USD')
-                    ->setTotal($pay);
+        $amount->setCurrency('USD')
+            ->setTotal($pay);
         $transaction = new Transaction();
-                $transaction->setAmount($amount)
-                    ->setItemList($item_list)
-                    ->setDescription('Your transaction description');
+        $transaction->setAmount($amount)
+            ->setItemList($item_list)
+            ->setDescription('Your transaction description');
         $redirect_urls = new RedirectUrls();
-                $redirect_urls->setReturnUrl(URL::route('featured')) /** Specify return URL **/
-                    ->setCancelUrl(URL::route('featured'));
+        $redirect_urls->setReturnUrl(URL::route('featured'))/** Specify return URL **/
+        ->setCancelUrl(URL::route('featured'));
         $payment = new Payment();
-                $payment->setIntent('Sale')
-                    ->setPayer($payer)
-                    ->setRedirectUrls($redirect_urls)
-                    ->setTransactions(array($transaction));
-                
-                try {
-        $payment->create($this->_api_context);
+        $payment->setIntent('Sale')
+            ->setPayer($payer)
+            ->setRedirectUrls($redirect_urls)
+            ->setTransactions(array($transaction));
+
+        try {
+            $payment->create($this->_api_context);
         } catch (\PayPal\Exception\PPConnectionException $ex) {
-        if (\Config::get('app.debug')) {
-        \Session::put('error', 'Connection timeout');
-                        return Redirect::route('paywithpaypal');
-        } else {
-        \Session::put('error', 'Some error occur, sorry for inconvenient');
-                        return Redirect::route('paywithpaypal');
-        }
+            if (\Config::get('app.debug')) {
+                \Session::put('error', 'Connection timeout');
+                return Redirect::route('paywithpaypal');
+            } else {
+                \Session::put('error', 'Some error occur, sorry for inconvenient');
+                return Redirect::route('paywithpaypal');
+            }
         }
         foreach ($payment->getLinks() as $link) {
-        if ($link->getRel() == 'approval_url') {
-        $redirect_url = $link->getHref();
-                        break;
-        }
+            if ($link->getRel() == 'approval_url') {
+                $redirect_url = $link->getHref();
+                break;
+            }
         }
         /** add payment ID to session **/
-                Session::put('paypal_payment_id', $payment->getId());
+        Session::put('paypal_payment_id', $payment->getId());
         if (isset($redirect_url)) {
-        /** redirect to paypal **/
-                    return Redirect::away($redirect_url);
+            /** redirect to paypal **/
+            return Redirect::away($redirect_url);
         }
         \Session::put('error', 'Unknown error occurred');
-                return Redirect::route('paywithpaypal');
+        return Redirect::route('paywithpaypal');
     }
 
     public function getPaymentStatus(Request $request)
@@ -273,59 +274,53 @@ class FeatureCourseController extends Controller
         $payment_id = Session::get('paypal_payment_id');
         $amount = Session::get('payment');
         /** clear the session payment ID **/
-            Session::forget('paypal_payment_id');
-            if (empty($request->get('PayerID')) || empty($request->get('token')))
-
-             {
-    \Session::put('error', 'Payment failed');
-                return Redirect::route('/');
-    }
-      $payment = Payment::get($payment_id, $this->_api_context);
-          $execution = new PaymentExecution();
-            $execution->setPayerId($request->get('PayerID'));
-    /**Execute the payment **/
+        Session::forget('paypal_payment_id');
+        if (empty($request->get('PayerID')) || empty($request->get('token'))) {
+            \Session::put('error', 'Payment failed');
+            return Redirect::route('/');
+        }
+        $payment = Payment::get($payment_id, $this->_api_context);
+        $execution = new PaymentExecution();
+        $execution->setPayerId($request->get('PayerID'));
+        /**Execute the payment **/
         $result = $payment->execute($execution, $this->_api_context);
-
-       
-
 
 
         if ($result->getState() == 'approved') {
-                    
+
 
             $currency = Currency::first();
 
-            $feature = FeatureCourse::where('user_id',Auth::User()->id)->first();
+            $feature = FeatureCourse::where('user_id', Auth::User()->id)->first();
 
             $settings = Setting::first();
-           
-                       
-            $created_order = FeaturePayment::create([
-                'course_id' => $feature->course_id,
-                'user_id' => Auth::User()->id,
-                'transaction_id' => $payment_id,
-                'payment_method' => 'Paypal',
-                'total_amount' => $settings->feature_amount,
-                'currency' => $currency->currency,
-                'currency_icon' => $currency->icon,
-                'created_at'  => \Carbon\Carbon::now()->toDateTimeString(),
-                ]
-            );  
-              
 
-            if($created_order){
+
+            $created_order = FeaturePayment::create([
+                    'course_id' => $feature->course_id,
+                    'user_id' => Auth::User()->id,
+                    'transaction_id' => $payment_id,
+                    'payment_method' => 'Paypal',
+                    'total_amount' => $settings->feature_amount,
+                    'currency' => $currency->currency,
+                    'currency_icon' => $currency->icon,
+                    'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
+                ]
+            );
+
+
+            if ($created_order) {
 
                 Course::where('id', '=', $feature->course_id)->where('user_id', '=', Auth::user()->id)->update(['featured' => '1']);
 
-                $feature = FeatureCourse::where('user_id',Auth::User()->id)->delete();
-            } 
-            
-            
+                $feature = FeatureCourse::where('user_id', Auth::User()->id)->delete();
+            }
 
-        Session::flash('success', trans('flash.PaymentSuccess'));
+
+            Session::flash('success', trans('flash.PaymentSuccess'));
             return Redirect::route('featurecourse.index');
         }
         Session::flash('delete', trans('flash.PaymentFailed'));
-            return Redirect::route('featurecourse.index');
+        return Redirect::route('featurecourse.index');
     }
 }

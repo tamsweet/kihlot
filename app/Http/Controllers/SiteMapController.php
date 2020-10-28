@@ -8,20 +8,20 @@ use Spatie\Sitemap\SitemapGenerator;
 class SiteMapController extends Controller
 {
 
-	public function index()
-	{
-		return view('admin.sitemap.edit');
-	}
+    public function index()
+    {
+        return view('admin.sitemap.edit');
+    }
 
     public function sitemap(Request $request)
     {
-    	SitemapGenerator::create('app.url')->writeToFile('sitemap.xml');
+        SitemapGenerator::create('app.url')->writeToFile('sitemap.xml');
 
-    	return back()->with('success',trans('flash.CreatedSuccessfully'));
+        return back()->with('success', trans('flash.CreatedSuccessfully'));
     }
 
     public function download(Request $request)
     {
-    	return response()->download( public_path('sitemap.xml'));
+        return response()->download(public_path('sitemap.xml'));
     }
 }

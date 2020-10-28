@@ -8,13 +8,14 @@ use App\CourseClass;
 
 class DownloadController extends Controller
 {
-    public function getDownload($id){
+    public function getDownload($id)
+    {
 
-    	$entry = CourseClass::where('id', '=', $id)->firstOrFail();
-    	$pathToFile=public_path()."/files/pdf/".$entry->pdf;
-    	return response()->download($pathToFile);
+        $entry = CourseClass::where('id', '=', $id)->firstOrFail();
+        $pathToFile = public_path() . "/files/pdf/" . $entry->pdf;
+        return response()->download($pathToFile);
 
-	}
+    }
 
-	
+
 }

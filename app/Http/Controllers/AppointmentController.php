@@ -19,7 +19,7 @@ class AppointmentController extends Controller
      */
     public function index()
     {
-        
+
     }
 
     /**
@@ -35,7 +35,7 @@ class AppointmentController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -46,7 +46,7 @@ class AppointmentController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Appointment  $appointment
+     * @param \App\Appointment $appointment
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -58,7 +58,7 @@ class AppointmentController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Appointment  $appointment
+     * @param \App\Appointment $appointment
      * @return \Illuminate\Http\Response
      */
     public function edit(Appointment $appointment)
@@ -69,8 +69,8 @@ class AppointmentController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Appointment  $appointment
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Appointment $appointment
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -79,24 +79,21 @@ class AppointmentController extends Controller
         $maincourse = Course::findorfail($request->course_id);
         $input['accept'] = $request->accept;
 
-        if(isset($request->accept))
-        {
+        if (isset($request->accept)) {
             Appointment::where('id', $id)
-                    ->update(['reply' => $request->reply, 'accept' => 1]);
-        }
-        else
-        { 
+                ->update(['reply' => $request->reply, 'accept' => 1]);
+        } else {
             Appointment::where('id', $id)
-                    ->update(['reply' => NULL, 'accept' => 0]);
+                ->update(['reply' => NULL, 'accept' => 0]);
         }
 
-        return redirect()->route('course.show',$maincourse->id);
+        return redirect()->route('course.show', $maincourse->id);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Appointment  $appointment
+     * @param \App\Appointment $appointment
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
@@ -118,31 +115,31 @@ class AppointmentController extends Controller
                 'instructor_id' => $request->instructor_id,
                 'course_id' => $id,
                 'title' => $request->title,
-                'detail' =>  $request->detail,
-                'accept' =>  '0',
-                'start_time' =>  $request->date_time,
+                'detail' => $request->detail,
+                'accept' => '0',
+                'start_time' => $request->date_time,
             ]
         );
 
         $users = User::where('id', $request->instructor_id)->first();
 
 
-        if($appointment){
-            if(env('MAIL_USERNAME')!=null) {
-                try{
-                    
+        if ($appointment) {
+            if (env('MAIL_USERNAME') != null) {
+                try {
+
                     /*sending email*/
                     $x = 'You get Appointment Request';
                     $request = $appointment;
                     Mail::to($users->email)->send(new UserAppointment($x, $request));
 
 
-                }catch(\Swift_TransportException $e){
+                } catch (\Swift_TransportException $e) {
                     return back()->with('success', trans('flash.RequestMailError'));
                 }
             }
         }
 
-        return back()->with('success', trans('flash.RequestSuccessfully')); 
+        return back()->with('success', trans('flash.RequestSuccessfully'));
     }
 }

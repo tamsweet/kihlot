@@ -31,6 +31,6 @@ class WelcomeUser extends Mailable
     public function build()
     {
         return $this->markdown('email.welcomeuser')
-        ->with('user',$this->user);
+            ->with('user', $this->user);
     }
 }
